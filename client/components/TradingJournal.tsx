@@ -4,7 +4,48 @@ import { motion } from "framer-motion";
 import { useDeriverseStore } from "@/lib/store";
 import { journalEntries } from "@/lib/mockData";
 
+import { AreaChart, Area, ResponsiveContainer } from "recharts";
+
 const ITEMS_PER_PAGE = 4;
+
+const TradeSnapshot = ({ pnl }: { pnl: number }) => {
+    // Generate simple mock data based on PnL sign
+    // PnL > 0: Trend upwards
+    // PnL < 0: Trend downwards
+    const data = [
+        { v: 40 + Math.random() * 10 },
+        { v: 45 + Math.random() * 10 },
+        { v: 42 + Math.random() * 10 },
+        { v: 50 + Math.random() * 10 },
+        { v: pnl >= 0 ? 70 + Math.random() * 20 : 20 + Math.random() * 10 },
+    ];
+
+    const chartColor = pnl >= 0 ? "#a855f7" : "rgba(255, 255, 255, 0.4)";
+
+    return (
+        <div className="w-16 h-10 overflow-hidden rounded-md bg-abyss-light/30 border border-white/5">
+            <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={data}>
+                    <defs>
+                        <linearGradient id={`grad-${pnl}`} x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor={chartColor} stopOpacity={0.3} />
+                            <stop offset="95%" stopColor={chartColor} stopOpacity={0} />
+                        </linearGradient>
+                    </defs>
+                    <Area
+                        type="monotone"
+                        dataKey="v"
+                        stroke={chartColor}
+                        strokeWidth={2}
+                        fillOpacity={1}
+                        fill={`url(#grad-${pnl})`}
+                        isAnimationActive={false}
+                    />
+                </AreaChart>
+            </ResponsiveContainer>
+        </div>
+    );
+};
 
 export default function TradingJournal() {
     const { journalPage, nextPage, prevPage, setAiInsightOpen } = useDeriverseStore();
@@ -57,7 +98,7 @@ export default function TradingJournal() {
                             {/* Top row */}
                             <div className="flex items-center justify-between mb-3">
                                 <div className="flex items-center gap-2.5">
-                                    <span className="text-2xl">{entry.emotion}</span>
+                                    <TradeSnapshot pnl={entry.pnl} />
                                     <div>
                                         <p className="font-semibold text-sm tracking-wide">
                                             {entry.pair}
