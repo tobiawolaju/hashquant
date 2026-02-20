@@ -22,7 +22,7 @@ export default function BottomFABBar() {
             transition={{ type: "spring", stiffness: 200, damping: 25, delay: 0.5 }}
             className="fixed bottom-[25px] left-0 right-0 z-50 px-4"
         >
-            <div className="w-full max-w-[90%] md:max-w-[320px] mx-auto bg-abyss rounded-full px-3 py-2 flex items-center justify-between gap-2 shadow-2xl shadow-black/50">
+            <div className="w-full max-w-[95%] md:max-w-[350px] mx-auto bg-abyss rounded-full px-3 py-2 flex items-center justify-between gap-2 shadow-2xl shadow-black/50">
                 {/* Left: Icon Toggle */}
                 <div className="flex bg-abyss-light rounded-full p-0.5 gap-0.5">
                     {tabs.map((tab) => (
