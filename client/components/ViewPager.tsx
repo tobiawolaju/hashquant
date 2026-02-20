@@ -3,6 +3,8 @@
 import { motion, AnimatePresence, type PanInfo } from "framer-motion";
 import { useDeriverseStore, type TabType } from "@/lib/store";
 import { useState } from "react";
+import { AreaChart, Area, ResponsiveContainer, YAxis } from "recharts";
+import { Search, ChevronDown } from "lucide-react";
 
 const tabs: TabType[] = ["Futures", "Perps", "Options"];
 
@@ -28,38 +30,37 @@ const tabIcons: Record<TabType, React.ReactNode> = {
 };
 
 const chartLines = [
-    [20, 45, 35, 55, 48, 62, 58, 72, 65, 80, 75, 90, 85, 78, 88],
-    [50, 42, 55, 38, 45, 32, 48, 35, 52, 40, 58, 45, 62, 50, 55],
-    [30, 35, 28, 42, 38, 50, 45, 55, 60, 52, 65, 58, 70, 62, 68],
+    [20, 45, 35, 55, 48, 62, 58, 72, 65, 80, 75, 90, 85, 78, 88].map((val, i) => ({ time: i, price: val })),
+    [50, 42, 55, 38, 45, 32, 48, 35, 52, 40, 58, 45, 62, 50, 55].map((val, i) => ({ time: i, price: val })),
+    [30, 35, 28, 42, 38, 50, 45, 55, 60, 52, 65, 58, 70, 62, 68].map((val, i) => ({ time: i, price: val })),
 ];
 
-function MockChart({ tabIndex }: { tabIndex: number }) {
+function RealChart({ tabIndex }: { tabIndex: number }) {
     const data = chartLines[tabIndex];
-    const width = 300;
-    const height = 120;
-    const stepX = width / (data.length - 1);
-
-    const pathD = data
-        .map((y, i) => `${i === 0 ? "M" : "L"} ${i * stepX} ${height - y}`)
-        .join(" ");
-
-    const areaD = `${pathD} L ${width} ${height} L 0 ${height} Z`;
 
     return (
-        <svg
-            viewBox={`0 0 ${width} ${height}`}
-            className="w-full h-32 md:h-48 mt-6 opacity-60"
-            preserveAspectRatio="none"
-        >
-            <defs>
-                <linearGradient id={`grad-${tabIndex}`} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#a855f7" stopOpacity="0.4" />
-                    <stop offset="100%" stopColor="#a855f7" stopOpacity="0" />
-                </linearGradient>
-            </defs>
-            <path d={areaD} fill={`url(#grad-${tabIndex})`} />
-            <path d={pathD} fill="none" stroke="#a855f7" strokeWidth="2" />
-        </svg>
+        <div className="w-full h-32 md:h-48 mt-6">
+            <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={data}>
+                    <defs>
+                        <linearGradient id={`colorPrice-${tabIndex}`} x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#a855f7" stopOpacity={0.4} />
+                            <stop offset="95%" stopColor="#a855f7" stopOpacity={0} />
+                        </linearGradient>
+                    </defs>
+                    <YAxis domain={['dataMin - 10', 'dataMax + 10']} hide />
+                    <Area
+                        type="monotone"
+                        dataKey="price"
+                        stroke="#a855f7"
+                        strokeWidth={2}
+                        fillOpacity={1}
+                        fill={`url(#colorPrice-${tabIndex})`}
+                        isAnimationActive={true}
+                    />
+                </AreaChart>
+            </ResponsiveContainer>
+        </div>
     );
 }
 
@@ -107,6 +108,15 @@ export default function ViewPager() {
                 }}
             />
 
+            {/* Token Selector Header */}
+            <div className="absolute top-6 left-6 z-[60]">
+                <button className="flex items-center gap-2 glass px-4 py-2 rounded-full hover:bg-white/10 transition-colors group shadow-lg">
+                    <Search size={16} className="text-muted group-hover:text-neon transition-colors" />
+                    <span className="font-bold text-white tracking-wide text-sm">SOL/USDC</span>
+                    <ChevronDown size={16} className="text-muted group-hover:text-white transition-colors" />
+                </button>
+            </div>
+
 
 
             {/* Chart area */}
@@ -141,9 +151,9 @@ export default function ViewPager() {
                             TradingView Chart · {activeTab.toUpperCase()}
                         </p>
 
-                        {/* Mock chart SVG */}
-                        <div className="w-full px-8">
-                            <MockChart tabIndex={currentIndex} />
+                        {/* Real Chart */}
+                        <div className="w-full px-8 h-32 md:h-48 mb-6 mt-4 relative z-0">
+                            <RealChart tabIndex={currentIndex} />
                         </div>
 
                         {/* Price mock */}
