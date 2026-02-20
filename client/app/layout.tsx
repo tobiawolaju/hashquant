@@ -21,8 +21,8 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "TrueDex | Professional Trading Terminal",
-  description: "Next-gen trading interface built on Deriverse",
+  title: "Hashquant | Turning Retail into Quant",
+  description: "Narrated trading analytics built on Deriverse",
 };
 
 export default function RootLayout({
