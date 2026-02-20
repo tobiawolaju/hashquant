@@ -61,8 +61,8 @@ export default function BottomFABBar() {
                             )}
                             <span
                                 className={`relative z-10 transition-all duration-300 ${activeTab === tab.key
-                                    ? "grayscale invert"
-                                    : "grayscale brightness-[10] opacity-70"
+                                    ? "grayscale invert opacity-100"
+                                    : "grayscale brightness-[10] opacity-50"
                                     }`}
                             >
                                 {tab.icon}
