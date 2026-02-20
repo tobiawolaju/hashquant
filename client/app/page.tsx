@@ -1,8 +1,14 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import ViewPager from "@/components/ViewPager";
 import TradingJournal from "@/components/TradingJournal";
 import PortfolioAnalysisLyrics from "@/components/PortfolioAnalysisLyrics";
+
+const PortfolioTechnicalDashboard = dynamic(
+  () => import("@/components/PortfolioTechnicalDashboard"),
+  { ssr: false }
+);
 import BottomFABBar from "@/components/BottomFABBar";
 import ExecutionModal from "@/components/ExecutionModal";
 import AIInsightModal from "@/components/AIInsightModal";
@@ -16,8 +22,11 @@ export default function Home() {
       {/* Fold 2: Trading Journal */}
       <TradingJournal />
 
-      {/* Fold 3: Portfolio Analysis */}
+      {/* Fold 3: Portfolio Analysis (Storytelling) */}
       <PortfolioAnalysisLyrics />
+
+      {/* Fold 4: Advanced Technical Analytics */}
+      <PortfolioTechnicalDashboard />
 
       {/* Fixed Bottom FAB Bar */}
       <BottomFABBar />

@@ -3,7 +3,7 @@ import { solanaConnection } from './connection';
 import { IndexerTrade } from '../types/deriverse';
 
 // Mock Deriverse Program ID - substitute with official Mainnet/Devnet IDs
-const DERIVERSE_PROGRAM_ID = 'DRVS111111111111111111111111111111111111111';
+const DERIVERSE_PROGRAM_ID = 'CDESjex4EDBKLwx9ZPzVbjiHEHatasb5fhSJZMzNfvw2';
 
 /**
  * journalIndexerService

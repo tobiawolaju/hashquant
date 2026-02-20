@@ -5,16 +5,57 @@ import { useEffect, useRef } from "react";
 import { useDeriverseStore } from "@/lib/store";
 import { portfolioStats } from "@/lib/mockData";
 
-const lyrics = [
-    { title: "Portfolio Analysis", subtitle: "" },
-    { title: "Win Rate", subtitle: `${portfolioStats.winRate}%`, detail: "Above average" },
-    { title: "Total Fees Paid", subtitle: `$${portfolioStats.totalFeesPaid.toLocaleString()}`, detail: "Protocol fees + Gas" },
-    { title: "Max Drawdown", subtitle: `-${portfolioStats.drawdown}%`, detail: "Peak to trough" },
-    { title: "Your trade data is public on Solana, but your notes are stored locally and only visible to you.", subtitle: "", isDisclaimer: true },
-];
-
 export default function PortfolioAnalysisLyrics() {
-    const { setIsPortfolioActive, isPortfolioActive } = useDeriverseStore();
+    const { setIsPortfolioActive, isPortfolioActive, metrics } = useDeriverseStore();
+
+    const lyricsData = [
+        { title: "Portfolio Analysis", subtitle: "" },
+        {
+            title: "Total PnL",
+            subtitle: `${metrics.totalPnL >= 0 ? "+" : ""}$${metrics.totalPnL.toLocaleString()}`,
+            detail: metrics.totalPnL >= 0 ? "Profit Secured" : "Education Cost (Drawdown)"
+        },
+        {
+            title: "Win Rate",
+            subtitle: `${metrics.winRate}%`,
+            detail: metrics.winRate > 50 ? "Mathematical Edge" : "Room for strategy refinement"
+        },
+        {
+            title: "Trading Volume",
+            subtitle: `$${(metrics.totalVolume / 1000).toFixed(1)}K`,
+            detail: "Cumulative Market Impact"
+        },
+        {
+            title: "Total Fees Paid",
+            subtitle: `$${metrics.totalFees.toLocaleString()}`,
+            detail: "Supporting the Solana Ecosystem"
+        },
+        {
+            title: "Long/Short Bias",
+            subtitle: `${metrics.longCount}:${metrics.shortCount}`,
+            detail: metrics.longCount > metrics.shortCount ? "Bullish Sentiment" : "Bearish leaning"
+        },
+        {
+            title: "Best Session",
+            subtitle: metrics.sessionPerformance.london > metrics.sessionPerformance.ny ? "London" : "New York",
+            detail: "Peak focus period detected"
+        },
+        {
+            title: "Largest Single Gain",
+            subtitle: `+$${metrics.largestGain.toLocaleString()}`,
+            detail: "Textbook execution"
+        },
+        {
+            title: "Max Drawdown",
+            subtitle: `-${metrics.maxDrawdown}%`,
+            detail: "Peak-to-Trough resilience test"
+        },
+        {
+            title: "All trading data is indexed directly from the Deriverse Solana program ID.",
+            subtitle: "",
+            isDisclaimer: true
+        },
+    ];
     const containerRef = useRef<HTMLDivElement>(null);
     const { scrollYProgress } = useScroll({
         target: containerRef,
@@ -68,11 +109,11 @@ export default function PortfolioAnalysisLyrics() {
 
                 {/* Lyrics Scroller */}
                 <div className="relative w-full max-w-2xl h-full flex flex-col items-center justify-center">
-                    {lyrics.map((line, i) => (
+                    {lyricsData.map((line, i) => (
                         <LyricLine
                             key={i}
                             index={i}
-                            total={lyrics.length}
+                            total={lyricsData.length}
                             scrollYProgress={scrollYProgress}
                             content={line}
                         />
@@ -87,7 +128,7 @@ function LyricLine({ index, total, scrollYProgress, content }: {
     index: number;
     total: number;
     scrollYProgress: any;
-    content: typeof lyrics[0] & { detail?: string; isDisclaimer?: boolean }
+    content: { title: string; subtitle: string; detail?: string; isDisclaimer?: boolean }
 }) {
     const start = index / total;
     const end = (index + 1) / total;
