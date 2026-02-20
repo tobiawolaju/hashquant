@@ -45,29 +45,29 @@ export const LightweightChart: React.FC<LightweightChartProps> = ({
                 fontFamily: 'Inter, ui-sans-serif, system-ui',
             },
             grid: {
-                vertLines: { color: 'rgba(168, 85, 247, 0.05)' },
-                horzLines: { color: 'rgba(168, 85, 247, 0.05)' },
+                vertLines: { color: 'rgba(168, 85, 247, 0.03)' },
+                horzLines: { color: 'rgba(168, 85, 247, 0.03)' },
             },
             crosshair: {
                 mode: 0, // Normal mode
             },
             timeScale: {
-                borderColor: 'rgba(255, 255, 255, 0.1)',
+                borderColor: 'rgba(168, 85, 247, 0.1)',
                 timeVisible: true,
                 secondsVisible: false,
             },
             rightPriceScale: {
-                borderColor: 'rgba(255, 255, 255, 0.1)',
+                borderColor: 'rgba(168, 85, 247, 0.1)',
             },
         });
 
         // 2. Add Candlestick Series
         const candleSeries = chart.addSeries(CandlestickSeries, {
-            upColor: '#22c55e',
-            downColor: '#ef4444',
+            upColor: '#a855f7', // Purple
+            downColor: 'rgba(255, 255, 255, 0.5)', // White 0.5 opacity
             borderVisible: false,
-            wickUpColor: '#22c55e',
-            wickDownColor: '#ef4444',
+            wickUpColor: '#a855f7', // Purple
+            wickDownColor: 'rgba(255, 255, 255, 0.5)', // White 0.5 opacity
         });
 
         // 3. Add Volume Histogram (on bottom)
@@ -102,7 +102,7 @@ export const LightweightChart: React.FC<LightweightChartProps> = ({
         const formattedVolume: HistogramData[] = data.map(c => ({
             time: c.time as any,
             value: c.volume,
-            color: c.close >= c.open ? 'rgba(34, 197, 94, 0.5)' : 'rgba(239, 68, 68, 0.5)',
+            color: c.close >= c.open ? 'rgba(168, 85, 247, 0.5)' : 'rgba(255, 255, 255, 0.2)',
         }));
 
         candleSeries.setData(formattedCandles);
@@ -121,7 +121,7 @@ export const LightweightChart: React.FC<LightweightChartProps> = ({
                 volumeSeries.update({
                     time: candle.time as any,
                     value: candle.volume,
-                    color: candle.close >= candle.open ? 'rgba(34, 197, 94, 0.5)' : 'rgba(239, 68, 68, 0.5)',
+                    color: candle.close >= candle.open ? 'rgba(168, 85, 247, 0.5)' : 'rgba(255, 255, 255, 0.2)',
                 });
             });
         }
@@ -154,7 +154,7 @@ export const LightweightChart: React.FC<LightweightChartProps> = ({
         const formattedVolume: HistogramData[] = data.map(c => ({
             time: c.time as any,
             value: c.volume,
-            color: c.close >= c.open ? 'rgba(34, 197, 94, 0.5)' : 'rgba(239, 68, 68, 0.5)',
+            color: c.close >= c.open ? 'rgba(168, 85, 247, 0.5)' : 'rgba(255, 255, 255, 0.2)',
         }));
 
         candleSeriesRef.current.setData(formattedCandles);

@@ -69,33 +69,27 @@ export default function ViewPager() {
     };
 
     return (
-        <section className="h-screen flex flex-col items-center justify-center relative overflow-hidden">
+        <section className="h-screen w-screen flex flex-col relative overflow-hidden bg-abyss">
             {/* Background grid */}
             <div
-                className="absolute inset-0 opacity-[0.03]"
+                className="absolute inset-0 opacity-[0.02] pointer-events-none"
                 style={{
                     backgroundImage:
                         "linear-gradient(rgba(168,85,247,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(168,85,247,0.5) 1px, transparent 1px)",
-                    backgroundSize: "40px 40px",
+                    backgroundSize: "60px 60px",
                 }}
             />
 
-            {/* Token Selector Header */}
-            <div className="absolute top-6 left-6 z-[60] flex items-center gap-3">
-                <button className="flex items-center gap-2 glass px-4 py-2 rounded-full hover:bg-white/10 transition-colors group shadow-lg">
-                    <Search size={16} className="text-muted group-hover:text-neon transition-colors" />
-                    <span className="font-bold text-white tracking-wide text-sm">SOL/USDC</span>
-                    <ChevronDown size={16} className="text-muted group-hover:text-white transition-colors" />
-                </button>
-
+            {/* Header Controls - Centered */}
+            <div className="absolute top-8 left-1/2 -translate-x-1/2 z-[60] flex items-center justify-center">
                 {/* Timeframe Selector */}
-                <div className="flex bg-abyss-light/50 glass rounded-full p-1 gap-1">
+                <div className="flex bg-abyss-light/40 glass rounded-full p-1 gap-1 shadow-2xl">
                     {timeframes.map(tf => (
                         <button
                             key={tf}
                             onClick={() => setTimeframe(tf)}
-                            className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all ${timeframe === tf
-                                    ? 'bg-neon text-white shadow-lg shadow-neon/20'
+                            className={`px-5 py-2 rounded-full text-[12px] font-black tracking-tighter transition-all ${timeframe === tf
+                                    ? 'bg-neon text-white shadow-[0_0_20px_rgba(168,85,247,0.4)]'
                                     : 'text-muted hover:text-white'
                                 }`}
                         >
@@ -105,17 +99,15 @@ export default function ViewPager() {
                 </div>
             </div>
 
-
-
-            {/* Chart area */}
-            <div className="relative w-full h-full z-10">
-                <AnimatePresence custom={direction} mode="wait">
+            {/* Main Immersive Chart Area */}
+            <div className="flex-1 w-full h-full relative z-10">
+                <AnimatePresence mode="wait" custom={direction}>
                     <motion.div
                         key={activeTab}
                         custom={direction}
                         variants={variants}
-                        initial="enter"
-                        animate="center"
+                        initial="initial"
+                        animate="animate"
                         exit="exit"
                         transition={{
                             x: { type: "spring", stiffness: 300, damping: 30 },
@@ -123,48 +115,22 @@ export default function ViewPager() {
                         }}
                         drag="x"
                         dragConstraints={{ left: 0, right: 0 }}
-                        dragElastic={0.1}
+                        dragElastic={0.2}
                         onDragEnd={handleDragEnd}
-                        className="absolute inset-0 flex flex-col items-center justify-center glass cursor-grab active:cursor-grabbing"
+                        className="absolute inset-0 w-full h-full"
                     >
-                        {/* Header */}
-                        <div className="flex items-center gap-3">
-                            <span className="text-3xl">{tabIcons[activeTab]}</span>
-                            <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
-                                {activeTab}
-                            </h2>
-                        </div>
-
-                        <p className="text-muted text-sm mt-2 tracking-wide flex items-center gap-2">
-                            <Clock size={12} /> TradingView Terminal · {activeTab.toUpperCase()} · {timeframe}
-                        </p>
-
-                        {/* Professional Chart */}
-                        <div className="w-full px-4 md:px-8 h-48 md:h-64 mb-6 mt-6 relative z-0">
-                            {loading ? (
-                                <div className="w-full h-full flex items-center justify-center bg-abyss-light/20 rounded-xl border border-white/5 animate-pulse">
-                                    <div className="text-neon/40 text-xs font-bold tracking-widest uppercase">Initializing Stream...</div>
+                        {loading ? (
+                            <div className="w-full h-full flex items-center justify-center bg-abyss">
+                                <div className="text-neon/30 text-xs font-black tracking-[0.3em] uppercase animate-pulse">
+                                    Synchronizing Nodes...
                                 </div>
-                            ) : (
-                                <LightweightChart
-                                    data={candles}
-                                    onTick={setOnCandleUpdate}
-                                />
-                            )}
-                        </div>
-
-                        {/* Price mock */}
-                        <div className="flex items-baseline gap-2 mt-4 glass px-4 py-2 rounded-xl">
-                            <span className="text-xl font-mono font-bold text-white">
-                                ${currentPrice?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '---'}
-                            </span>
-                            <span className="text-xs text-buy font-medium">+2.34%</span>
-                        </div>
-
-                        {/* Swipe hint */}
-                        <p className="text-muted/40 text-[10px] mt-6 tracking-widest uppercase">
-                            ← Swipe to navigate →
-                        </p>
+                            </div>
+                        ) : (
+                            <LightweightChart
+                                data={candles}
+                                onTick={setOnCandleUpdate}
+                            />
+                        )}
                     </motion.div>
                 </AnimatePresence>
             </div>
