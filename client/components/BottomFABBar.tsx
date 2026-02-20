@@ -4,10 +4,31 @@ import { motion } from "framer-motion";
 import { useDeriverseStore, type TabType } from "@/lib/store";
 import { vwapData } from "@/lib/mockData";
 
-const tabs: { key: TabType; icon: string }[] = [
-    { key: "Futures", icon: "📈" },
-    { key: "Perps", icon: "♾️" },
-    { key: "Options", icon: "🎯" },
+const tabs: { key: TabType; icon: React.ReactNode }[] = [
+    {
+        key: "Futures", icon: (
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                <polyline points="16 7 22 7 22 13"></polyline>
+            </svg>
+        )
+    },
+    {
+        key: "Perps", icon: (
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4Zm0 0c2 2.67 4 4 6 4a4 4 0 1 0 0-8c-2 0-4 1.33-6 4Z"></path>
+            </svg>
+        )
+    },
+    {
+        key: "Options", icon: (
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <circle cx="12" cy="12" r="6"></circle>
+                <circle cx="12" cy="12" r="2"></circle>
+            </svg>
+        )
+    },
 ];
 
 export default function BottomFABBar() {
