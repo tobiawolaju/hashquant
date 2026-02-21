@@ -114,25 +114,14 @@ export default function ViewPager() {
                         }}
                         className="absolute inset-0 w-full h-full"
                     >
-                        {activeTab === "Chart" && (
-                            <>
-                                {loading ? (
-                                    <div className="w-full h-full flex items-center justify-center bg-abyss">
-                                        <div className="text-neon/30 text-xs font-black tracking-[0.3em] uppercase animate-pulse">
-                                            Synchronizing Nodes...
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <LightweightChart
-                                        data={candles}
-                                        onTick={setOnCandleUpdate}
-                                        activeTool={activeTool}
-                                        isMagnetActive={isMagnetActive}
-                                        onToolChange={setActiveTool}
-                                    />
-                                )}
-                            </>
-                        )}
+                        {/* 
+                            Note: The Chart is now hoisted OUTSIDE of AnimatePresence.
+                            This is to prevent "Object is disposed" errors from LightweightCharts
+                            when Framer Motion destroys the DOM element while polling continues.
+                            We keep it empty here to reserve the animated slide space if needed.
+                        */}
+
+
 
                         {activeTab === "Orderbook" && (
                             <div className="w-full h-full flex flex-col bg-abyss text-white/90 pt-16 px-4">
@@ -242,6 +231,27 @@ export default function ViewPager() {
                         )}
                     </motion.div>
                 </AnimatePresence>
+
+                {/* Hoisted Chart Container to prevent Unmount crashes */}
+                <div
+                    className={`absolute inset-0 w-full h-full transition-opacity duration-300 ${activeTab === 'Chart' ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none -z-10'}`}
+                >
+                    {loading ? (
+                        <div className="w-full h-full flex items-center justify-center bg-abyss">
+                            <div className="text-neon/30 text-xs font-black tracking-[0.3em] uppercase animate-pulse">
+                                Synchronizing Nodes...
+                            </div>
+                        </div>
+                    ) : (
+                        <LightweightChart
+                            data={candles}
+                            onTick={setOnCandleUpdate}
+                            activeTool={activeTool}
+                            isMagnetActive={isMagnetActive}
+                            onToolChange={setActiveTool}
+                        />
+                    )}
+                </div>
 
                 {/* Left Sidebar - Quant Tools (Only visible on Chart) */}
                 {activeTab === "Chart" && (
