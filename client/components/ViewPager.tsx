@@ -12,20 +12,6 @@ import { mockWalletData } from "@/lib/mockWalletData";
 import { mockOrderBookData } from "@/lib/mockOrderBook";
 import dynamic from 'next/dynamic';
 
-interface ListProps {
-    height: number;
-    itemCount: number;
-    itemSize: number;
-    width: string | number;
-    className?: string;
-    style?: React.CSSProperties;
-    children: (props: { index: number; style: React.CSSProperties }) => React.ReactElement;
-}
-
-const List = dynamic<ListProps>(() => import('react-window').then((mod: any) => mod.FixedSizeList || mod.List), {
-    ssr: false,
-    loading: () => <div className="animate-pulse bg-white/5 w-full h-full rounded-md" />
-});
 
 const tabs: TabType[] = ["Chart", "Orderbook", "Wallet"];
 
@@ -124,66 +110,79 @@ export default function ViewPager() {
 
 
                         {activeTab === "Orderbook" && (
-                            <div className="w-full h-full flex flex-col bg-abyss text-white/90 pt-16 px-4">
+                            <div className="w-full h-full flex flex-col bg-abyss text-white/90 pt-16 px-6 select-none overflow-hidden">
                                 {/* Orderbook Header */}
-                                <div className="flex justify-between items-center pb-2 border-b border-white/10 text-xs font-bold text-white/50 tracking-wider">
-                                    <span className="w-1/3 text-left">PRICE</span>
-                                    <span className="w-1/3 text-right">SIZE</span>
-                                    <span className="w-1/3 text-right">TOTAL</span>
+                                <div className="flex justify-between items-center pb-3 border-b border-white/5 text-[10px] font-black text-white/30 tracking-[0.2em] uppercase">
+                                    <span className="w-1/3 text-left">Price (USD)</span>
+                                    <span className="w-1/3 text-right">Size</span>
+                                    <span className="w-1/3 text-right">Total</span>
                                 </div>
 
-                                {/* Asks (Descending to Mid) */}
-                                <div className="flex-1 overflow-hidden mt-2 relative">
-                                    <List
-                                        height={300} // Approximate half-height, flex handles actual bounds poorly in old react-window without AutoSizer
-                                        itemCount={mockOrderBookData.asks.length}
-                                        itemSize={24}
-                                        width="100%"
-                                        className="scrollbar-hide"
-                                        style={{ height: '40vh' }}
-                                    >
-                                        {({ index, style }) => {
-                                            // Reverse index so lowest ask is at the bottom near the spread
-                                            const ask = mockOrderBookData.asks[mockOrderBookData.asks.length - 1 - index];
-                                            return (
-                                                <div style={style} className="flex justify-between items-center text-sm font-mono cursor-pointer hover:bg-white/5">
-                                                    <span className="w-1/3 text-left text-sell drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]">{ask.price}</span>
-                                                    <span className="w-1/3 text-right text-white/80">{ask.size}</span>
-                                                    <span className="w-1/3 text-right text-white/40">{ask.total}</span>
-                                                </div>
-                                            );
-                                        }}
-                                    </List>
+                                {/* Asks (Sell Orders) - Bottom Aligned */}
+                                <div className="flex-1 flex flex-col justify-end overflow-hidden py-1">
+                                    {mockOrderBookData.asks.slice(0, 15).reverse().map((ask, i) => {
+                                        const total = parseFloat(ask.total);
+                                        const maxTotal = parseFloat(mockOrderBookData.asks[14].total);
+                                        const depthPercent = (total / maxTotal) * 100;
+
+                                        return (
+                                            <div key={`ask-${i}`} className="group relative flex justify-between items-center h-6 text-[12px] font-mono hover:bg-white/5 transition-colors">
+                                                {/* Depth Bar */}
+                                                <div
+                                                    className="absolute right-0 top-0 bottom-0 bg-sell/10 transition-all duration-500"
+                                                    style={{ width: `${depthPercent}%` }}
+                                                />
+                                                <span className="w-1/3 text-left text-sell font-black z-10">{ask.price}</span>
+                                                <span className="w-1/3 text-right text-white/70 z-10">{ask.size}</span>
+                                                <span className="w-1/3 text-right text-white/30 z-10">{ask.total}</span>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
 
-                                {/* Spread / Mid Price */}
-                                <div className="flex items-center justify-center py-2 bg-white/5 border-y border-white/10 my-2 shadow-[0_0_20px_rgba(168,85,247,0.15)]">
-                                    <span className="text-xl font-black text-white tracking-tighter">
-                                        {currentPrice?.toFixed(2) || "96,500.00"}
-                                    </span>
+                                {/* Current Price / Spread Indicator */}
+                                <div className="relative py-4 my-2 border-y border-white/5 bg-white/[0.02] overflow-hidden">
+                                    <div className="absolute inset-0 bg-neon/5 animate-pulse" />
+                                    <div className="relative flex items-center justify-between px-2">
+                                        <div className="flex flex-col">
+                                            <span className="text-2xl font-black text-white tracking-tighter drop-shadow-[0_0_15px_rgba(168,85,247,0.4)]">
+                                                {currentPrice?.toFixed(2) || "96,500.00"}
+                                            </span>
+                                            <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest -mt-1">Mid Price</span>
+                                        </div>
+                                        <div className="flex flex-col items-end">
+                                            <span className="text-xs font-mono text-buy">+$1,245.20</span>
+                                            <span className="text-[10px] font-mono text-white/20">Spread: 1.00</span>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                {/* Bids (Ascending from Mid) */}
-                                <div className="flex-1 overflow-hidden mb-2 relative">
-                                    <List
-                                        height={300}
-                                        itemCount={mockOrderBookData.bids.length}
-                                        itemSize={24}
-                                        width="100%"
-                                        className="scrollbar-hide"
-                                        style={{ height: '40vh' }}
-                                    >
-                                        {({ index, style }) => {
-                                            const bid = mockOrderBookData.bids[index];
-                                            return (
-                                                <div style={style} className="flex justify-between items-center text-sm font-mono cursor-pointer hover:bg-white/5">
-                                                    <span className="w-1/3 text-left text-buy drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]">{bid.price}</span>
-                                                    <span className="w-1/3 text-right text-white/80">{bid.size}</span>
-                                                    <span className="w-1/3 text-right text-white/40">{bid.total}</span>
-                                                </div>
-                                            );
-                                        }}
-                                    </List>
+                                {/* Bids (Buy Orders) - Top Aligned */}
+                                <div className="flex-1 flex flex-col justify-start overflow-hidden py-1">
+                                    {mockOrderBookData.bids.slice(0, 15).map((bid, i) => {
+                                        const total = parseFloat(bid.total);
+                                        const maxTotal = parseFloat(mockOrderBookData.bids[14].total);
+                                        const depthPercent = (total / maxTotal) * 100;
+
+                                        return (
+                                            <div key={`bid-${i}`} className="group relative flex justify-between items-center h-6 text-[12px] font-mono hover:bg-white/5 transition-colors">
+                                                {/* Depth Bar */}
+                                                <div
+                                                    className="absolute right-0 top-0 bottom-0 bg-buy/10 transition-all duration-500"
+                                                    style={{ width: `${depthPercent}%` }}
+                                                />
+                                                <span className="w-1/3 text-left text-buy font-black z-10">{bid.price}</span>
+                                                <span className="w-1/3 text-right text-white/70 z-10">{bid.size}</span>
+                                                <span className="w-1/3 text-right text-white/30 z-10">{bid.total}</span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Legend or Volume summary */}
+                                <div className="mt-auto py-4 border-t border-white/5 flex justify-between text-[10px] font-black text-white/20 tracking-tighter uppercase">
+                                    <span>Liquidity Depth: 25.4M</span>
+                                    <span>24h Vol: 1.2B</span>
                                 </div>
                             </div>
                         )}
