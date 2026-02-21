@@ -8,10 +8,12 @@ import PortfolioAnalysisLyrics from "@/components/PortfolioAnalysisLyrics";
 import BottomFABBar from "@/components/BottomFABBar";
 import ExecutionModal from "@/components/ExecutionModal";
 import AIInsightModal from "@/components/AIInsightModal";
+import SplashScreen from "@/components/SplashScreen";
 
 export default function Home() {
   return (
     <main className="relative min-h-screen pb-24 scroll-smooth">
+      <SplashScreen />
       {/* Fold 1: Chart ViewPager */}
       <ViewPager />
 
