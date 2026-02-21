@@ -213,12 +213,9 @@ export const LightweightChart: React.FC<LightweightChartProps> = ({
         setIsDrawing(false);
 
         if (currentDrawing.type === 'measure') {
-            const measureObj = { ...currentDrawing, id: Date.now().toString(), temporary: true };
+            const measureObj = { ...currentDrawing, id: Date.now().toString(), temporary: false };
             if (measureObj.start?.logical !== measureObj.end?.logical) {
                 setDrawings(prev => [...prev, measureObj]);
-                setTimeout(() => {
-                    setDrawings(prev => prev.filter(d => d.id !== measureObj.id));
-                }, 3000); // Dissolve after 3 seconds
             }
             if (onToolChange) onToolChange('cursor');
         } else {
