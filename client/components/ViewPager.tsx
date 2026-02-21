@@ -123,6 +123,7 @@ export default function ViewPager() {
                                 data={candles}
                                 onTick={setOnCandleUpdate}
                                 activeTool={activeTool}
+                                onToolChange={setActiveTool}
                             />
                         )}
                     </motion.div>
@@ -169,7 +170,7 @@ export default function ViewPager() {
                     <ToolButton
                         icon={<Trash2 size={18} />}
                         className="text-sell/60 hover:text-sell"
-                        onClick={() => { }}
+                        onClick={() => setActiveTool("trash")}
                     />
                 </div>
             </div>
