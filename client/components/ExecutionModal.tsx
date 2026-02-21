@@ -41,7 +41,10 @@ export default function ExecutionModal() {
                             />
                         </Dialog.Overlay>
 
-                        <Dialog.Content asChild>
+                        <Dialog.Content
+                            asChild
+                            onOpenAutoFocus={(event) => event.preventDefault()}
+                        >
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.92, y: 20 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
