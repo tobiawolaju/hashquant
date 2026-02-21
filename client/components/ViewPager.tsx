@@ -126,8 +126,8 @@ export default function ViewPager() {
                     </motion.div>
                 </AnimatePresence>
 
-                {/* Right Sidebar - Quant Tools */}
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 z-[60] flex flex-col gap-2 p-1.5 bg-abyss-light/40 glass-heavy rounded-2xl shadow-2xl border border-white/5">
+                {/* Left Sidebar - Quant Tools */}
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 z-[60] flex flex-col gap-2 p-1.5 bg-abyss-light/40 glass-heavy rounded-2xl shadow-2xl border border-white/5">
                     <ToolButton icon={<MousePointer2 size={18} />} active />
                     <div className="w-full h-px bg-white/5 my-1" />
                     <ToolButton icon={<Slash size={18} />} />
