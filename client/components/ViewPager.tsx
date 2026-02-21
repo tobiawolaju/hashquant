@@ -129,10 +129,10 @@ export default function ViewPager() {
                                             <div key={`ask-${i}`} className="group relative flex justify-between items-center h-6 text-[12px] font-mono hover:bg-white/5 transition-colors">
                                                 {/* Depth Bar */}
                                                 <div
-                                                    className="absolute right-0 top-0 bottom-0 bg-sell/10 transition-all duration-500"
+                                                    className="absolute right-0 top-0 bottom-0 bg-white/5 transition-all duration-500"
                                                     style={{ width: `${depthPercent}%` }}
                                                 />
-                                                <span className="w-1/3 text-left text-sell font-black z-10">{ask.price}</span>
+                                                <span className="w-1/3 text-left text-white/40 font-black z-10">{ask.price}</span>
                                                 <span className="w-1/3 text-right text-white/70 z-10">{ask.size}</span>
                                                 <span className="w-1/3 text-right text-white/30 z-10">{ask.total}</span>
                                             </div>
@@ -151,7 +151,7 @@ export default function ViewPager() {
                                             <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest -mt-1">Mid Price</span>
                                         </div>
                                         <div className="flex flex-col items-end">
-                                            <span className="text-xs font-mono text-buy">+$1,245.20</span>
+                                            <span className="text-xs font-mono text-neon">+$1,245.20</span>
                                             <span className="text-[10px] font-mono text-white/20">Spread: 1.00</span>
                                         </div>
                                     </div>
@@ -168,10 +168,10 @@ export default function ViewPager() {
                                             <div key={`bid-${i}`} className="group relative flex justify-between items-center h-6 text-[12px] font-mono hover:bg-white/5 transition-colors">
                                                 {/* Depth Bar */}
                                                 <div
-                                                    className="absolute right-0 top-0 bottom-0 bg-buy/10 transition-all duration-500"
+                                                    className="absolute right-0 top-0 bottom-0 bg-neon/10 transition-all duration-500"
                                                     style={{ width: `${depthPercent}%` }}
                                                 />
-                                                <span className="w-1/3 text-left text-buy font-black z-10">{bid.price}</span>
+                                                <span className="w-1/3 text-left text-neon font-black z-10">{bid.price}</span>
                                                 <span className="w-1/3 text-right text-white/70 z-10">{bid.size}</span>
                                                 <span className="w-1/3 text-right text-white/30 z-10">{bid.total}</span>
                                             </div>
