@@ -35,12 +35,18 @@ const timeframes: Timeframe[] = ['1m', '5m', '15m', '1h'];
 
 export default function ViewPager() {
     const { activeTab, setActiveTab } = useDeriverseStore();
+    const currentIndex = tabs.indexOf(activeTab);
+    const [prevIndex, setPrevIndex] = useState(currentIndex);
     const [direction, setDirection] = useState(0);
     const [timeframe, setTimeframe] = useState<Timeframe>('1m');
 
-    const { candles, loading, currentPrice, setOnCandleUpdate } = useMarketData(activeTab, timeframe);
+    // Update direction when tab changes
+    if (currentIndex !== prevIndex) {
+        setDirection(currentIndex > prevIndex ? 1 : -1);
+        setPrevIndex(currentIndex);
+    }
 
-    const currentIndex = tabs.indexOf(activeTab);
+    const { candles, loading, currentPrice, setOnCandleUpdate } = useMarketData(activeTab, timeframe);
 
 
     const variants = {
