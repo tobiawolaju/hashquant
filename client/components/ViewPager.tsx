@@ -22,7 +22,7 @@ interface ListProps {
     children: (props: { index: number; style: React.CSSProperties }) => React.ReactElement;
 }
 
-const List = dynamic<ListProps>(() => import('react-window').then((mod: any) => mod.FixedSizeList), {
+const List = dynamic<ListProps>(() => import('react-window').then((mod: any) => mod.FixedSizeList || mod.List), {
     ssr: false,
     loading: () => <div className="animate-pulse bg-white/5 w-full h-full rounded-md" />
 });
