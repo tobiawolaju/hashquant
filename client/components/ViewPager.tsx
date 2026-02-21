@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence, type PanInfo } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useDeriverseStore, type TabType } from "@/lib/store";
 import { useState } from "react";
 import { LightweightChart } from "./LightweightChart";
@@ -42,16 +42,6 @@ export default function ViewPager() {
 
     const currentIndex = tabs.indexOf(activeTab);
 
-    const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-        const threshold = 50;
-        if (info.offset.x < -threshold && currentIndex < tabs.length - 1) {
-            setDirection(1);
-            setActiveTab(tabs[currentIndex + 1]);
-        } else if (info.offset.x > threshold && currentIndex > 0) {
-            setDirection(-1);
-            setActiveTab(tabs[currentIndex - 1]);
-        }
-    };
 
     const variants = {
         enter: (dir: number) => ({
@@ -113,10 +103,6 @@ export default function ViewPager() {
                             x: { type: "spring", stiffness: 300, damping: 30 },
                             opacity: { duration: 0.2 },
                         }}
-                        drag="x"
-                        dragConstraints={{ left: 0, right: 0 }}
-                        dragElastic={0.2}
-                        onDragEnd={handleDragEnd}
                         className="absolute inset-0 w-full h-full"
                     >
                         {loading ? (
