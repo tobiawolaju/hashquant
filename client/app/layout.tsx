@@ -23,6 +23,10 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "Hashquant | Turning Retail into Quant",
   description: "Narrated trading analytics built on Deriverse",
+  manifest: "/manifest.json",
+  icons: {
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({
