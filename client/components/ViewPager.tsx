@@ -65,24 +65,26 @@ export default function ViewPager() {
                 }}
             />
 
-            {/* Header Controls - Centered */}
-            <div className="absolute top-8 left-1/2 -translate-x-1/2 z-[60] flex items-center justify-center">
-                {/* Timeframe Selector */}
-                <div className="flex bg-abyss-light/40 glass rounded-full p-1 gap-1 shadow-2xl">
-                    {timeframes.map(tf => (
-                        <button
-                            key={tf}
-                            onClick={() => setTimeframe(tf)}
-                            className={`px-5 py-2 rounded-full text-[12px] font-black tracking-tighter transition-all ${timeframe === tf
-                                ? 'bg-neon text-white shadow-[0_0_20px_rgba(168,85,247,0.4)]'
-                                : 'text-muted hover:text-white'
-                                }`}
-                        >
-                            {tf.toUpperCase()}
-                        </button>
-                    ))}
+            {/* Header Controls - Centered (Only on Chart) */}
+            {activeTab === "Chart" && (
+                <div className="absolute top-8 left-1/2 -translate-x-1/2 z-[60] flex items-center justify-center">
+                    {/* Timeframe Selector */}
+                    <div className="flex bg-abyss-light/40 glass rounded-full p-1 gap-1 shadow-2xl">
+                        {timeframes.map(tf => (
+                            <button
+                                key={tf}
+                                onClick={() => setTimeframe(tf)}
+                                className={`px-5 py-2 rounded-full text-[12px] font-black tracking-tighter transition-all ${timeframe === tf
+                                    ? 'bg-neon text-white shadow-[0_0_20px_rgba(168,85,247,0.4)]'
+                                    : 'text-muted hover:text-white'
+                                    }`}
+                            >
+                                {tf.toUpperCase()}
+                            </button>
+                        ))}
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Main Immersive Chart Area */}
             <div className="flex-1 w-full h-full relative z-10">
