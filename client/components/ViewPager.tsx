@@ -6,7 +6,7 @@ import { useState } from "react";
 import { LightweightChart } from "./LightweightChart";
 import { useMarketData } from "../hooks/useMarketData";
 import { Timeframe } from "../services/candleAggregator";
-import { Search, ChevronDown, Clock } from "lucide-react";
+import { Search, ChevronDown, Clock, MousePointer2, Slash, Minus, Ruler, Magnet, Trash2, LayoutGrid } from "lucide-react";
 
 const tabs: TabType[] = ["Futures", "Perps", "Options"];
 
@@ -125,7 +125,34 @@ export default function ViewPager() {
                         )}
                     </motion.div>
                 </AnimatePresence>
+
+                {/* Right Sidebar - Quant Tools */}
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 z-[60] flex flex-col gap-2 p-1.5 bg-abyss-light/40 glass-heavy rounded-2xl shadow-2xl border border-white/5">
+                    <ToolButton icon={<MousePointer2 size={18} />} active />
+                    <div className="w-full h-px bg-white/5 my-1" />
+                    <ToolButton icon={<Slash size={18} />} />
+                    <ToolButton icon={<Minus size={18} />} />
+                    <ToolButton icon={<LayoutGrid size={18} />} />
+                    <ToolButton icon={<Ruler size={18} />} />
+                    <div className="w-full h-px bg-white/5 my-1" />
+                    <ToolButton icon={<Magnet size={18} />} />
+                    <ToolButton icon={<Trash2 size={18} />} className="text-sell/60 hover:text-sell" />
+                </div>
             </div>
         </section>
+    );
+}
+
+function ToolButton({ icon, active, className = "" }: { icon: React.ReactNode; active?: boolean; className?: string }) {
+    return (
+        <button className={`
+            w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-200
+            ${active
+                ? 'bg-neon text-white shadow-[0_0_15px_rgba(168,85,247,0.4)]'
+                : 'text-muted hover:bg-white/5 hover:text-white'}
+            ${className}
+        `}>
+            {icon}
+        </button>
     );
 }
