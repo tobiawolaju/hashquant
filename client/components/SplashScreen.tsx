@@ -16,14 +16,18 @@ export default function SplashScreen() {
     const [loadedCount, setLoadedCount] = useState(0);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // Body scroll lock
+    // Aggressive Body & HTML Scroll Lock
     useEffect(() => {
         if (isVisible) {
+            const originalBodyOverflow = document.body.style.overflow;
+            const originalHtmlOverflow = document.documentElement.style.overflow;
             document.body.style.overflow = "hidden";
-        } else {
-            document.body.style.overflow = "unset";
+            document.documentElement.style.overflow = "hidden";
+            return () => {
+                document.body.style.overflow = originalBodyOverflow;
+                document.documentElement.style.overflow = originalHtmlOverflow;
+            };
         }
-        return () => { document.body.style.overflow = "unset"; };
     }, [isVisible]);
 
     const { scrollYProgress } = useScroll({
@@ -45,26 +49,30 @@ export default function SplashScreen() {
     };
 
     // Parallax Transforms (Reverse on Scroll)
-    const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
-    const bgScale = useTransform(scrollYProgress, [0, 1], [1, 1.25]);
+    // BG (Layer 1)
+    const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
+    const bgScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
 
-    const figure1X = useTransform(scrollYProgress, [0, 0.4], ["0%", "-40%"]);
-    const figure1Opacity = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
+    // Figure 1 (Diamond Hander): Stays visible longer then clears
+    const figure1X = useTransform(scrollYProgress, [0, 0.45], ["0%", "-40%"]);
+    const figure1Opacity = useTransform(scrollYProgress, [0, 0.45], [1, 0]);
 
-    const figure2X = useTransform(scrollYProgress, [0, 0.4], ["0%", "40%"]);
-    const figure2Opacity = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
+    // Figure 2 (Degen Trader)
+    const figure2X = useTransform(scrollYProgress, [0, 0.45], ["0%", "40%"]);
+    const figure2Opacity = useTransform(scrollYProgress, [0, 0.45], [1, 0]);
 
-    const handsY = useTransform(scrollYProgress, [0, 0.5], ["0%", "50%"]);
-    const handsOpacity = useTransform(scrollYProgress, [0, 0.4], [0.9, 0]);
+    // Floating Hands
+    const handsY = useTransform(scrollYProgress, [0, 0.5], ["0%", "45%"]);
+    const handsOpacity = useTransform(scrollYProgress, [0, 0.45], [0.9, 0]);
 
-    // Title Transforms: Clears out earlier to make room for content
-    const titleOpacity = useTransform(scrollYProgress, [0, 0.35], [1, 0]);
-    const titleScale = useTransform(scrollYProgress, [0, 0.35], [1, 0.6]);
-    const titleY = useTransform(scrollYProgress, [0, 0.35], [0, -150]);
+    // Title Transforms: Fades out completely before content appears
+    const titleOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
+    const titleScale = useTransform(scrollYProgress, [0, 0.3], [1, 0.7]);
+    const titleY = useTransform(scrollYProgress, [0, 0.3], [0, -100]);
 
     // Content Reveal: Starts appearing only after title is gone
-    const contentOpacity = useTransform(scrollYProgress, [0.45, 0.85], [0, 1]);
-    const contentY = useTransform(scrollYProgress, [0.45, 0.85], [100, 0]);
+    const contentOpacity = useTransform(scrollYProgress, [0.4, 0.7], [0, 1]);
+    const contentY = useTransform(scrollYProgress, [0.4, 0.7], [80, 0]);
 
     return (
         <AnimatePresence>
@@ -73,10 +81,21 @@ export default function SplashScreen() {
                     ref={containerRef}
                     initial={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 1, ease: "easeInOut" }}
-                    className="fixed inset-0 z-[999] bg-black overflow-y-scroll scroll-smooth"
+                    transition={{ duration: 1.2, ease: "easeInOut" }}
+                    className="fixed inset-0 z-[9999] bg-black overflow-y-auto scrollbar-hide"
+                    style={{
+                        msOverflowStyle: 'none',
+                        scrollbarWidth: 'none',
+                        WebkitOverflowScrolling: 'touch'
+                    }}
                 >
-                    {/* The Height of the Landing Page (Increased for a better scroll experience) */}
+                    {/* Hide scrollbar for Chrome/Safari via CSS-in-JS pseudo-style */}
+                    <style dangerouslySetInnerHTML={{
+                        __html: `
+                        .scrollbar-hide::-webkit-scrollbar { display: none !important; }
+                    `}} />
+
+                    {/* The Height of the Landing Page */}
                     <div className="h-[250vh] w-full relative">
                         {/* Fixed Background Layers */}
                         <div className="sticky top-0 h-screen w-full overflow-hidden">
@@ -119,7 +138,7 @@ export default function SplashScreen() {
                                 initial={{ x: "-40%", opacity: 0 }}
                                 animate={imagesLoaded ? { x: "0%", opacity: 1 } : {}}
                                 style={{ x: figure1X, opacity: figure1Opacity }}
-                                transition={{ delay: 0.5, duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+                                transition={{ delay: 0.5, duration: 2, ease: [0.16, 1, 0.3, 1] }}
                                 className="absolute bottom-0 left-0 z-[10] w-[50%] h-[90%]"
                             >
                                 <Image
@@ -136,7 +155,7 @@ export default function SplashScreen() {
                                 initial={{ x: "40%", opacity: 0 }}
                                 animate={imagesLoaded ? { x: "0%", opacity: 1 } : {}}
                                 style={{ x: figure2X, opacity: figure2Opacity }}
-                                transition={{ delay: 0.5, duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+                                transition={{ delay: 0.5, duration: 2, ease: [0.16, 1, 0.3, 1] }}
                                 className="absolute bottom-0 right-0 z-[10] w-[50%] h-[90%]"
                             >
                                 <Image
@@ -153,7 +172,7 @@ export default function SplashScreen() {
                                 initial={{ y: "20%", opacity: 0 }}
                                 animate={imagesLoaded ? { y: "0%", opacity: 0.9 } : {}}
                                 style={{ y: handsY, opacity: handsOpacity }}
-                                transition={{ delay: 0.8, duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
+                                transition={{ delay: 0.8, duration: 2.2, ease: [0.16, 1, 0.3, 1] }}
                                 className="absolute bottom-0 left-0 right-0 z-[30] h-[60%]"
                             >
                                 <Image
@@ -168,62 +187,66 @@ export default function SplashScreen() {
                             {/* ═══ z-[40]: Gradient Overlay ═══ */}
                             <motion.div
                                 initial={{ opacity: 0 }}
-                                animate={imagesLoaded ? { opacity: 0.5 } : {}}
-                                transition={{ duration: 2 }}
-                                className="absolute inset-0 z-[40] bg-gradient-to-b from-abyss/40 via-black/20 to-black pointer-events-none"
+                                animate={imagesLoaded ? { opacity: 0.55 } : {}}
+                                transition={{ duration: 2.5 }}
+                                className="absolute inset-0 z-[40] bg-gradient-to-b from-abyss/40 via-black/30 to-black pointer-events-none"
                             />
 
-                            {/* ═══ z-[50]: Central Title Section (Hero) ═══ */}
-                            <div className="absolute inset-0 z-[60] flex items-center justify-center p-6 text-center">
+                            {/* ═══ z-[100]: Hero Section ═══ */}
+                            <div className="absolute inset-0 z-[100] flex items-center justify-center p-6 text-center pointer-events-none">
                                 <motion.div
                                     style={{ opacity: titleOpacity, scale: titleScale, y: titleY }}
                                 >
                                     <motion.h1
-                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        initial={{ opacity: 0, scale: 0.95 }}
                                         animate={imagesLoaded ? { opacity: 1, scale: 1 } : {}}
-                                        transition={{ duration: 1.5, ease: "easeOut", delay: 1.2 }}
-                                        className="text-6xl md:text-9xl font-black text-white tracking-tighter drop-shadow-[0_0_30px_rgba(255,255,255,0.4)]"
+                                        transition={{ duration: 1.8, ease: "easeOut", delay: 1 }}
+                                        className="text-7xl md:text-9xl font-black text-white tracking-tighter drop-shadow-[0_0_40px_rgba(255,255,255,0.3)]"
                                     >
                                         Dominus Quant
                                     </motion.h1>
                                     <motion.div
-                                        initial={{ opacity: 0, y: 20 }}
+                                        initial={{ opacity: 0, y: 30 }}
                                         animate={imagesLoaded ? { opacity: 1, y: 0 } : {}}
-                                        transition={{ delay: 1.8, duration: 1 }}
-                                        className="mt-8 flex flex-col items-center gap-2"
+                                        transition={{ delay: 2, duration: 1.2 }}
+                                        className="mt-8 flex flex-col items-center gap-3"
                                     >
-                                        <p className="text-white tracking-[0.6em] uppercase text-[10px] md:text-xs font-bold opacity-60">
-                                            Scroll to Explore
+                                        <p className="text-white tracking-[0.8em] uppercase text-[10px] md:text-xs font-bold opacity-60">
+                                            Deep Intelligence Protocol
                                         </p>
                                         <motion.div
-                                            animate={{ y: [0, 5, 0] }}
-                                            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                                            className="w-px h-12 bg-gradient-to-b from-white to-transparent"
+                                            animate={{ y: [0, 8, 0] }}
+                                            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                                            className="w-px h-16 bg-gradient-to-b from-white/40 to-transparent"
                                         />
                                     </motion.div>
                                 </motion.div>
                             </div>
 
-                            {/* ═══ z-[51]: Reveal Section Content (Landing) ═══ */}
-                            <div className="absolute inset-0 z-[70] flex flex-col items-center justify-center pointer-events-none p-6 translate-z-0">
+                            {/* ═══ z-[110]: Landing Content ═══ */}
+                            <div className="absolute inset-0 z-[110] flex flex-col items-center justify-center pointer-events-none p-6">
                                 <motion.div
-                                    style={{ opacity: contentOpacity, y: contentY }}
-                                    className="max-w-2xl text-center pointer-events-auto bg-black/40 backdrop-blur-sm p-12 rounded-3xl border border-white/5"
+                                    style={{
+                                        opacity: contentOpacity,
+                                        y: contentY,
+                                        pointerEvents: useTransform(scrollYProgress, p => p > 0.6 ? "auto" : "none")
+                                    }}
+                                    className="max-w-3xl text-center bg-black/50 backdrop-blur-xl p-16 rounded-[40px] border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)]"
                                 >
-                                    <h2 className="text-3xl md:text-5xl font-black text-white mb-6 uppercase tracking-tight leading-[1.1]">
-                                        Turning Random James<br />into Quants
+                                    <h2 className="text-4xl md:text-6xl font-black text-white mb-8 uppercase tracking-tighter leading-none">
+                                        Turning Random James<br /><span className="text-neon">into Quants</span>
                                     </h2>
-                                    <p className="text-white/70 text-base md:text-lg mb-12 leading-relaxed max-w-lg mx-auto">
+                                    <p className="text-white/70 text-base md:text-xl mb-12 leading-relaxed max-w-xl mx-auto font-medium">
                                         A high-fidelity on-chain trading intelligence protocol.
                                         Distributed market intelligence powering a shared algorithmic trading pool.
                                     </p>
                                     <button
                                         onClick={handleStartTrading}
-                                        className="group relative px-16 py-5 bg-white text-black font-black text-sm tracking-[0.2em] uppercase overflow-hidden transition-all hover:scale-105 active:scale-95 rounded-full"
+                                        className="group relative px-20 py-6 bg-white text-black font-black text-sm tracking-[0.3em] uppercase overflow-hidden transition-all hover:scale-105 active:scale-95 rounded-full"
                                     >
-                                        <span className="relative z-10 flex items-center gap-3">
+                                        <span className="relative z-10 flex items-center gap-4">
                                             Hybrid Trade
-                                            <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <svg className="w-6 h-6 transition-transform group-hover:translate-x-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                                             </svg>
                                         </span>
@@ -232,13 +255,14 @@ export default function SplashScreen() {
                                 </motion.div>
                             </div>
 
-                            {/* ═══ z-[99]: Aesthetic Grain Overlay ═══ */}
-                            <div className="absolute inset-0 z-[99] opacity-[0.05] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+                            {/* ═══ z-[200]: Grain Overlay ═══ */}
+                            <div className="absolute inset-0 z-[200] opacity-[0.05] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
                         </div>
                     </div>
-                </motion.div>
+
+                </motion.div >
             )}
-        </AnimatePresence>
+        </AnimatePresence >
     );
 }
 
