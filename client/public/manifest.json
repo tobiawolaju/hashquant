@@ -1,7 +1,7 @@
 {
-  "name": "Hashquant",
-  "short_name": "Hashquant",
-  "description": "Turning Random James into Quants",
+  "name": "DQlabs",
+  "short_name": "DQlabs",
+  "description": "Professional Institutional Trading Analytics",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#09090b",

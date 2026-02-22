@@ -21,7 +21,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Hashquant | Turning Retail into Quant",
+  title: "DQlabs | Institutional Grade Terminal",
   description: "Narrated trading analytics built on Deriverse",
   manifest: "/manifest.json",
   icons: {
