@@ -43,20 +43,12 @@ export default function SplashScreen() {
                     transition={{ duration: 1, ease: "easeInOut" }}
                     className="fixed inset-0 z-[999] bg-black flex items-center justify-center overflow-hidden"
                 >
-                    {/* ═══ Theme Gradient Influence ═══ */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={imagesLoaded ? { opacity: 0.4 } : {}}
-                        transition={{ duration: 3 }}
-                        className="absolute inset-0 z-[1] bg-gradient-to-tr from-neon/20 via-transparent to-neon/10 pointer-events-none"
-                    />
-
                     {/* ═══ z-[0]: Layer 1 — Major Background (Blurred for Perspective) ═══ */}
                     <motion.div
                         initial={{ scale: 1.1, opacity: 0 }}
                         animate={imagesLoaded ? { scale: 1, opacity: 0.8 } : {}}
                         transition={{ duration: 5, ease: "easeOut" }}
-                        className="absolute inset-0 z-[0] transform-gpu transition-all"
+                        className="absolute inset-0 z-[0] transform-gpu"
                         style={{ filter: "blur(4px)" }}
                     >
                         <Image
@@ -117,27 +109,6 @@ export default function SplashScreen() {
                         />
                     </motion.div>
 
-                    {/* ═══ z-[20]: Center Text — All White Fade-in ═══ */}
-                    <div className="relative z-[20] flex flex-col items-center">
-                        <motion.h1
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={imagesLoaded ? { opacity: 1, y: 0 } : {}}
-                            transition={{ duration: 1.5, ease: "easeOut", delay: 1.5 }}
-                            className="text-7xl md:text-9xl font-black text-white tracking-[-0.05em] drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]"
-                        >
-                            <span className="opacity-40">#</span>Quant
-                        </motion.h1>
-
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={imagesLoaded ? { opacity: 0.4 } : {}}
-                            transition={{ delay: 2.5, duration: 1.5 }}
-                            className="text-center mt-6"
-                        >
-                            <span className="text-[10px] font-bold text-white uppercase tracking-[0.8em]">Modular Liquidity Protocol</span>
-                        </motion.div>
-                    </div>
-
                     {/* ═══ z-[30]: Layer 5 — Floating Hands ═══ */}
                     <motion.div
                         initial={{ y: "20%", opacity: 0 }}
@@ -153,6 +124,35 @@ export default function SplashScreen() {
                             onLoad={handleImageLoad}
                         />
                     </motion.div>
+
+                    {/* ═══ z-[40]: Gradient Overlay (Purple Top -> Black Bottom) ═══ */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={imagesLoaded ? { opacity: 0.4 } : {}}
+                        transition={{ duration: 2 }}
+                        className="absolute inset-0 z-[40] bg-gradient-to-b from-neon via-abyss/80 to-black pointer-events-none"
+                    />
+
+                    {/* ═══ z-[50]: Center Text — All White Fade-in (Highest Z) ═══ */}
+                    <div className="relative z-[50] flex flex-col items-center">
+                        <motion.h1
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={imagesLoaded ? { opacity: 1, y: 0 } : {}}
+                            transition={{ duration: 1.5, ease: "easeOut", delay: 1.5 }}
+                            className="text-7xl md:text-9xl font-black text-white tracking-[-0.05em] drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]"
+                        >
+                            <span className="opacity-40">#</span>Quant
+                        </motion.h1>
+
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={imagesLoaded ? { opacity: 0.8 } : {}}
+                            transition={{ delay: 2.5, duration: 1.5 }}
+                            className="text-center mt-6"
+                        >
+                            <span className="text-[10px] font-bold text-white uppercase tracking-[0.8em]">Modular Liquidity Protocol</span>
+                        </motion.div>
+                    </div>
 
                     {/* ═══ z-[99]: Aesthetic Grain Overlay ═══ */}
                     <div className="absolute inset-0 z-[99] opacity-[0.05] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
