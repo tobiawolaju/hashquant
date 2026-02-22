@@ -228,11 +228,3 @@ export default function SplashScreen() {
         </AnimatePresence>
     );
 }
-
-{/* ═══ z-[99]: Aesthetic Grain Overlay ═══ */ }
-<div className="absolute inset-0 z-[99] opacity-[0.05] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
-                </motion.div >
-            )}
-        </AnimatePresence >
-    );
-}
