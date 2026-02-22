@@ -27,13 +27,17 @@ export default function SplashScreen() {
         });
     }, []);
 
-    // Start the dismiss timer only after all images are loaded
-    useEffect(() => {
-        if (!imagesLoaded) return;
-        // Extend animation by 1s (to 5.5s) + wait 2 more seconds = 7.5s total
-        const timer = setTimeout(() => setIsVisible(false), 7500);
-        return () => clearTimeout(timer);
-    }, [imagesLoaded]);
+    // Auto-dismiss is disabled to make it a landing page
+    // useEffect(() => {
+    //     if (!imagesLoaded) return;
+    //     // Extend animation by 1s (to 5.5s) + wait 2 more seconds = 7.5s total
+    //     const timer = setTimeout(() => setIsVisible(false), 7500);
+    //     return () => clearTimeout(timer);
+    // }, [imagesLoaded]);
+
+    const handleStartTrading = () => {
+        setIsVisible(false);
+    };
 
     return (
         <AnimatePresence>
@@ -134,23 +138,59 @@ export default function SplashScreen() {
                         className="absolute inset-0 z-[40] bg-gradient-to-b from-neon via-abyss/80 to-black pointer-events-none"
                     />
 
-                    {/* ═══ z-[50]: Center Text — All White Fade-in (Highest Z) ═══ */}
-                    <div className="relative z-[50] flex flex-col items-center">
+                    {/* ═══ z-[50]: Center Text — Landing Page Mode ═══ */}
+                    <div className="relative z-[50] flex flex-col items-center max-w-2xl px-6">
                         <motion.h1
                             initial={{ opacity: 0, y: 10 }}
                             animate={imagesLoaded ? { opacity: 1, y: 0 } : {}}
                             transition={{ duration: 1.5, ease: "easeOut", delay: 1.5 }}
-                            className="text-4xl md:text-6xl font-black text-white tracking-[-0.05em] drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]"
+                            className="text-5xl md:text-8xl font-black text-white tracking-[-0.05em] drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] text-center leading-none"
                         >
                             <span className="opacity-40">DQ</span>labs
                         </motion.h1>
 
                         <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={imagesLoaded ? { opacity: 0.8 } : {}}
-                            transition={{ delay: 2.5, duration: 1.5 }}
-                            className="text-center mt-6"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={imagesLoaded ? { opacity: 1, y: 0 } : {}}
+                            transition={{ delay: 1.8, duration: 1.5 }}
+                            className="text-center mt-4 space-y-4"
                         >
+                            <p className="text-xl md:text-2xl font-medium text-white/90 tracking-tight">
+                                Turning Random James into Quants
+                            </p>
+                            <p className="text-sm md:text-base text-white/60 max-w-md mx-auto leading-relaxed">
+                                A high-fidelity on-chain trading intelligence protocol.
+                                Distributed market intelligence powering a shared algorithmic trading pool.
+                            </p>
+                        </motion.div>
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={imagesLoaded ? { opacity: 1, y: 0 } : {}}
+                            transition={{ delay: 2.2, duration: 1.2 }}
+                            className="flex flex-col sm:flex-row items-center gap-4 mt-12"
+                        >
+                            {/* Button 1: Hybrid Trade (Firm Side) */}
+                            <button
+                                onClick={handleStartTrading}
+                                className="group relative px-8 py-4 bg-white text-black font-black text-sm tracking-widest uppercase overflow-hidden transition-all hover:scale-105 active:scale-95"
+                            >
+                                <span className="relative z-10 flex items-center gap-2">
+                                    Hybrid Trade
+                                    <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                    </svg>
+                                </span>
+                                <div className="absolute inset-0 bg-neon opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </button>
+
+                            {/* Button 2: View Docs (DEX Side) */}
+                            <button
+                                onClick={() => window.open("https://github.com/tobiawolaju/TrueDex", "_blank")}
+                                className="px-8 py-4 border border-white/20 bg-white/5 backdrop-blur-md text-white font-bold text-sm tracking-widest uppercase hover:bg-white/10 transition-all hover:border-white/40 active:scale-95"
+                            >
+                                View Docs
+                            </button>
                         </motion.div>
                     </div>
 
