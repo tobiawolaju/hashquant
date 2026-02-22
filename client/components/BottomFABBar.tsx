@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import { useDeriverseStore, type TabType } from "@/lib/store";
 import { vwapData } from "@/lib/mockData";
 
-import { LineChart, BookOpen, Wallet } from "lucide-react";
+import { LineChart, BookOpen, Wallet, Play, Pause } from "lucide-react";
+import { useState } from "react";
 
 const tabs: { key: TabType; icon: React.ReactNode }[] = [
     { key: "Chart", icon: <LineChart size={20} /> },
@@ -14,6 +15,7 @@ const tabs: { key: TabType; icon: React.ReactNode }[] = [
 
 export default function BottomFABBar() {
     const { activeTab, setActiveTab, openExecutionModal, isPortfolioActive } = useDeriverseStore();
+    const [isPlaying, setIsPlaying] = useState(false);
 
     if (isPortfolioActive) return null;
 
@@ -57,9 +59,18 @@ export default function BottomFABBar() {
                     <motion.button
                         whileTap={{ scale: 0.95 }}
                         whileHover={{ scale: 1.03 }}
-                        className="px-5 py-2 rounded-full font-bold text-xs tracking-wide bg-neon hover:bg-neon-dim text-white transition-colors shadow-lg shadow-neon/20"
+                        animate={isPlaying ? {
+                            scale: [1, 0.9, 1],
+                            transition: { duration: 1, repeat: Infinity, ease: "easeInOut" }
+                        } : { scale: 1 }}
+                        onClick={() => setIsPlaying(!isPlaying)}
+                        className={`px-5 py-2 rounded-full font-bold text-xs tracking-wide transition-all shadow-lg flex items-center gap-2 ${isPlaying
+                                ? "bg-white text-abyss shadow-white/20"
+                                : "bg-neon text-white shadow-neon/20 hover:bg-neon-dim"
+                            }`}
                     >
-                        SELL
+                        {isPlaying ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" />}
+                        <span>{isPlaying ? "PAUSE" : "TRADE"}</span>
                     </motion.button>
 
                     <motion.button
