@@ -10,11 +10,6 @@ const SPLASH_IMAGES = [
     "/splash/Layer_3_Figure_1_The_Diamond_Hander_Center_Left.png",
     "/splash/Layer_4_Figure_2_The_Degen_Trader_Center_Right.png",
     "/splash/Layer_5_Floating_Hands_Foreground_Overlays.png",
-    "/splash/Meme_Cutout_1_The_Diamond_To_place_over_Figure_1_hands.png",
-    "/splash/Meme_Cutout_2_The_McDonald_Hat_To_place_on_Figure_1_head.png",
-    "/splash/MemeCutout3TheStonksArrowToplaceinFigure2pointinghand.png",
-    "/splash/MemeCutout4TheDogePepeMascotTopeekoutfrombehindthecolumns.png",
-    "/splash/MemeCutout5LaserEyesToputonFigure2.png",
 ];
 
 export default function SplashScreen() {
@@ -147,88 +142,6 @@ export default function SplashScreen() {
                             alt="Floating Hands"
                             fill
                             className="object-contain object-bottom"
-                            onLoad={handleImageLoad}
-                        />
-                    </motion.div>
-
-                    {/* ═══ z-[40]: MEME LAYER — Bouncy spring pop-ins ═══ */}
-
-                    {/* McDonald's Hat → over Figure 1's head */}
-                    <motion.div
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={imagesLoaded ? { scale: 1, opacity: 1 } : {}}
-                        transition={{ delay: 1.5, type: "spring", damping: 10, stiffness: 200 }}
-                        className="absolute top-[5%] left-[8%] z-[40] w-[20%] h-[20%] drop-shadow-[0_0_4px_rgba(255,255,255,1)]"
-                    >
-                        <Image
-                            src="/splash/Meme_Cutout_2_The_McDonald_Hat_To_place_on_Figure_1_head.png"
-                            alt="McDonald's Hat"
-                            fill
-                            className="object-contain"
-                            onLoad={handleImageLoad}
-                        />
-                    </motion.div>
-
-                    {/* Diamond → over Figure 1's hands */}
-                    <motion.div
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={imagesLoaded ? { scale: 1, opacity: 1 } : {}}
-                        transition={{ delay: 1.7, type: "spring", damping: 10, stiffness: 200 }}
-                        className="absolute bottom-[25%] left-[10%] z-[40] w-[15%] h-[15%] drop-shadow-[0_0_4px_rgba(255,255,255,1)]"
-                    >
-                        <Image
-                            src="/splash/Meme_Cutout_1_The_Diamond_To_place_over_Figure_1_hands.png"
-                            alt="Diamond Hands"
-                            fill
-                            className="object-contain"
-                            onLoad={handleImageLoad}
-                        />
-                    </motion.div>
-
-                    {/* Stonks Arrow → over Figure 2's hand */}
-                    <motion.div
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={imagesLoaded ? { scale: 1, opacity: 1 } : {}}
-                        transition={{ delay: 1.6, type: "spring", damping: 10, stiffness: 200 }}
-                        className="absolute top-[25%] right-[5%] z-[40] w-[18%] h-[25%] drop-shadow-[0_0_4px_rgba(255,255,255,1)]"
-                    >
-                        <Image
-                            src="/splash/MemeCutout3TheStonksArrowToplaceinFigure2pointinghand.png"
-                            alt="Stonks Arrow"
-                            fill
-                            className="object-contain"
-                            onLoad={handleImageLoad}
-                        />
-                    </motion.div>
-
-                    {/* Laser Eyes → over Figure 2's eyes (mix-blend-screen) */}
-                    <motion.div
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={imagesLoaded ? { scale: 1, opacity: 1 } : {}}
-                        transition={{ delay: 1.8, type: "spring", damping: 10, stiffness: 200 }}
-                        className="absolute top-[12%] right-[15%] z-[40] w-[16%] h-[12%] mix-blend-screen drop-shadow-[0_0_4px_rgba(255,255,255,1)]"
-                    >
-                        <Image
-                            src="/splash/MemeCutout5LaserEyesToputonFigure2.png"
-                            alt="Laser Eyes"
-                            fill
-                            className="object-contain"
-                            onLoad={handleImageLoad}
-                        />
-                    </motion.div>
-
-                    {/* Doge Pepe → peeks out from behind the columns */}
-                    <motion.div
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={imagesLoaded ? { scale: 1, opacity: 1 } : {}}
-                        transition={{ delay: 1.9, type: "spring", damping: 10, stiffness: 200 }}
-                        className="absolute bottom-[15%] right-[35%] z-[40] w-[14%] h-[18%] drop-shadow-[0_0_4px_rgba(255,255,255,1)]"
-                    >
-                        <Image
-                            src="/splash/MemeCutout4TheDogePepeMascotTopeekoutfrombehindthecolumns.png"
-                            alt="Doge Pepe"
-                            fill
-                            className="object-contain"
                             onLoad={handleImageLoad}
                         />
                     </motion.div>
