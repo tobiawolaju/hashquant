@@ -64,13 +64,12 @@ export default function BottomFABBar() {
                             transition: { duration: 1, repeat: Infinity, ease: "easeInOut" }
                         } : { scale: 1 }}
                         onClick={() => setIsPlaying(!isPlaying)}
-                        className={`px-5 py-2 rounded-full font-bold text-xs tracking-wide transition-all shadow-lg flex items-center gap-2 ${isPlaying
+                        className={`w-10 h-10 rounded-full font-bold transition-all shadow-lg flex items-center justify-center ${isPlaying
                                 ? "bg-white text-abyss shadow-white/20"
                                 : "bg-neon text-white shadow-neon/20 hover:bg-neon-dim"
                             }`}
                     >
-                        {isPlaying ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" />}
-                        <span>{isPlaying ? "PAUSE" : "TRADE"}</span>
+                        {isPlaying ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" className="ml-0.5" />}
                     </motion.button>
 
                     <motion.button
