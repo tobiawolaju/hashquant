@@ -35,15 +35,24 @@ export default function SplashScreen() {
     //     return () => clearTimeout(timer);
     // }, [imagesLoaded]);
 
-    // Disable scrolling when splash screen is visible
+    // Disable scrolling and overscroll behavior when splash screen is visible
     useEffect(() => {
         if (isVisible) {
             document.body.style.overflow = "hidden";
+            document.body.style.overscrollBehavior = "none";
+            document.documentElement.style.overflow = "hidden";
+            document.documentElement.style.overscrollBehavior = "none";
         } else {
             document.body.style.overflow = "auto";
+            document.body.style.overscrollBehavior = "auto";
+            document.documentElement.style.overflow = "auto";
+            document.documentElement.style.overscrollBehavior = "auto";
         }
         return () => {
             document.body.style.overflow = "auto";
+            document.body.style.overscrollBehavior = "auto";
+            document.documentElement.style.overflow = "auto";
+            document.documentElement.style.overscrollBehavior = "auto";
         };
     }, [isVisible]);
 
@@ -58,7 +67,8 @@ export default function SplashScreen() {
                     initial={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 1, ease: "easeInOut" }}
-                    className="fixed inset-0 z-[999] bg-black flex items-center justify-center overflow-hidden"
+                    className="fixed inset-0 z-[999] bg-black flex items-center justify-center overflow-hidden touch-none overscroll-none"
+                    style={{ overscrollBehavior: "none", touchAction: "none" }}
                 >
                     {/* ═══ z-[0]: Layer 1 — Major Background (Blurred for Perspective) ═══ */}
                     <motion.div
