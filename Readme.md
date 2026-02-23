@@ -1,150 +1,119 @@
-# Dominus Quant
->Turning John Does into Quants
+# Dominus Quant (DQuant)
 
-**Dominus Quant**, is a high-fidelity on-chain trading intelligence protocol designed for the Deriverse ecosystem and beyond.
+**Dominus Quant (DQuant)** is a narrative-driven, AI-assisted trading intelligence platform designed for crypto markets. Built as a personal project, it combines portfolio analytics, behavioral insights, and optional automated execution to help retail traders make data-driven decisions while keeping self-sabotage in check.
 
-Our mission is simple:
+This project showcases full-stack, distributed, and on-chain infrastructure design suitable for Web3 or blockchain system engineering roles.
 
-> Turn retail traders into quants — and turn distributed intelligence into real trading infrastructure.
+---
 
-Hashquant is the analytics and narrative layer.  
-Dominus Quant is the execution and intelligence layer.
+## Key Features
 
-Together, they form a decentralized quant stack.
+### 1. Narrative Portfolio Analytics
+- Transforms raw trade data into actionable insights.  
+- Generates narrative-style summaries (like a “sportif wrap”) for each trade and session.  
+- Highlights patterns in trading psychology, peak performance periods, and strategy efficiency.
 
-## Core Feature — The Dominus Engine
+**Example Insights:**
+- “In your last 30 days, you traded 87 times. 62% were long. Your best day was Tuesday.”  
+- “You lose 58% of trades you entered within 15 minutes of a previous loss.”  
+- “Your win rate drops after 3 consecutive wins.”  
 
-Dominus Quant introduces a new primitive:
+---
 
-> A distributed market intelligence network powering a shared algorithmic trading pool.
+### 2. Deep AI Intelligence
+- AI-driven recommendations to prevent self-sabotage.  
+- Behavioral analysis of execution timing, strategy, and FOMO tendencies.  
+- Detects performance decay, optimal holding periods, and risk patterns.
 
-Instead of relying on centralized trading bots, Dominus Quant uses:
+**Example AI Insights:**
+- Execution Timing: “You are profitable when holding trades longer than 2 hours.”  
+- Psychology Trap: “You lose 58% of trades you entered within 15 minutes of a previous loss.”  
+- Performance Decay: “Win rate drops after 3 consecutive wins.”
 
-- Edge devices as market sensors  
-- Consensus-based signal aggregation  
-- A centralized high-performance execution engine  
-- On-chain pool accounting  
+---
 
-### How It Works
+### 3. Trade Journaling
+- Automatic indexing of trades with structured metadata: pair, PnL, date, strategy notes.  
+- Quick navigation between trades with embedded lessons.  
+- Supports spot trading across multiple assets (SOL, BTC, ETH, etc.).
 
-1. Users join the Dominus Pool by acquiring pool shares.  
-2. Their device becomes an edge signal node.  
-3. Devices monitor market structure (order flow, volatility, liquidity shifts).  
-4. Signals are streamed to the Dominus Engine.  
-5. The engine aggregates signals using weighted consensus.  
-6. Trades are executed via the core risk engine.  
-7. Profits are distributed proportionally to:
-   - Capital contribution  
-   - Verified signal contribution  
+**Sample Trade Entries:**
+- **SOL/USDC | 2026-02-19 | +$342.50** – Clean breakout from 4H consolidation. Entered on retest of $148.  
+- **BTC/USDC | 2026-02-18 | $128.30** – FOMO into a pump. No setup, just chased the green candle.  
+- **ETH/USDC | 2026-02-17 | +$89.10** – Scalped London session open. Tight stop, quick profit.
 
-This is not copy trading. This is not HFT.  
+---
 
-It is:
+### 4. Portfolio Analytics Dashboard
+- Tracks cumulative PnL, win rate, trading volume, fees, and long/short bias.  
+- Detects best sessions and peak focus periods.  
+- Highlights largest gains and losses to improve strategy refinement.
 
-> Mid-frequency algorithmic trading powered by distributed sensing.
+**Example Dashboard Metrics:**
+- Total PnL: +$890.3  
+- Win Rate: 60%  
+- Long/Short Bias: 0:0 (Bearish leaning)  
+- Best Session: New York  
+- Largest Single Gain: +$567.2  
 
-## Narrated Analytics (Hashquant Layer)
+---
 
-Dominus Quant addresses the Deriverse Hackathon requirements by moving beyond static dashboards and into structured quant storytelling.
+## System Architecture
 
-### Emotional Storytelling — The Quant Narrative Layer
+This project demonstrates engineering depth across frontend, backend, and infrastructure:
 
-We don't just show data; we narrate your edge.
-
-Hashquant features a dynamic, lyrics-style portfolio review that transforms trading history into strategic feedback:
-
-- **Session Alpha**: Identifies when you have edge (London vs NY sessions)  
-- **Directional Bias**: Analyzes Long/Short imbalance  
-- **Risk Resilience**: Narrates drawdown recovery behavior  
-
-Trading becomes introspective, not reactive.
-
-### Technical Rigor — Advanced Analytics
-
-Powered by a custom on-chain indexer, Hashquant computes 13+ critical KPIs directly from the Deriverse Program ID (`CDESjex...`):
-
-- Equity Curve & Drawdown (PnL velocity visualized via Recharts)  
-- Fee Leakage Analysis (Protocol vs gas breakdown)  
-- Profit Factor & Expectancy (Statistical modeling)  
-- Win Rate Distribution & Trade Duration  
-- Long/Short Ratio Bias Tracking  
-- Symbol & Timeframe Filtering  
-
-This is professional-grade analytics for retail traders.
-
-### Smart Trading Journal
-
-Every trade is automatically indexed and enriched with a high-performance TradingView Lightweight Chart snapshot:
-
-- **Trade Playback**: Replay market structure at entry  
-- **Notes & Ethics**: Locally stored annotations (privacy-first design)  
-- **Behavioral Pattern Recognition**
-
-## Distributed Intelligence Network
-
-Dominus Quant extends beyond dashboards. It introduces a distributed signal architecture:
-
-### Edge Layer (User Devices)
-
-- Market monitoring  
-- Signal scoring  
-- Structured data packets  
-- Weighted reputation system  
-
-### Core Engine
-
-- Signal aggregation  
-- Risk modeling  
-- Position sizing  
-- Execution routing  
-
-### On-Chain Layer
-
-- Pool share minting  
-- Transparent accounting  
-- Profit distribution  
-- Governance expansion (future phase)
-
-## Technical Architecture
-
-Dominus Quant is built as a modular quant infrastructure stack:
-
-### Frontend
-
+**Frontend**
 - Next.js 16 (App Router)  
 - Tailwind CSS (Abyss Dark Theme)  
 - Zustand (Reactive Metrics Engine)  
 
-### Charts
+**Charts & Visualizations**
+- `lightweight-charts` for trade playback  
+- `recharts` for portfolio analytics  
 
-- `lightweight-charts` (Market playback)  
-- `recharts` (Analytics visualization)  
+**Backend / On-Chain Integration**
+- `@solana/web3.js` + custom Deriverse indexer  
+- Automated signal processing pipeline  
+- Optional pool-based trading engine (user capital aggregation)
 
-### Wallet & Auth
+**AI & Intelligence Layer**
+- Real-time behavioral analytics  
+- Signal confidence scoring  
+- Execution pattern detection and recommendations
 
-- Privy (Embedded Wallets & Signer Bridge)  
+**Distributed Design**
+- Edge-device readiness for signal monitoring  
+- Modular architecture supporting future decentralized execution  
 
-### On-Chain
+---
 
-- `@solana/web3.js`  
-- Custom Deriverse Indexer  
-- Pool accounting contracts (Dominus Layer)  
+## Why This Project Matters
 
-### Distributed Signal Layer (Planned Expansion)
+- Demonstrates ability to handle **real-time analytics** and **complex state management**.  
+- Showcases **on-chain integration** with Solana ecosystem.  
+- Highlights **AI and behavioral analytics** for decision-making.  
+- Provides a **playground for distributed, multi-user systems**.  
+- Serves as a portfolio piece proving full-stack, infrastructure, and systems engineering competency in Web3 contexts.
 
-- WebSocket-based edge node streaming  
-- Consensus scoring model  
-- Risk-aware execution engine  
+---
 
-## Vision
+## Next Steps / Expansion
 
-Dominus Quant is not just a dashboard.
+- Optional automated pool mode for capital allocation and trading.  
+- Real-time narrative detection engine for multiple assets.  
+- Edge-device distributed intelligence contribution.  
+- Extended AI insights for adaptive risk management and strategy optimization.  
 
-It is:
+---
 
-- A quant education layer  
-- A distributed signal network  
-- A shared capital engine  
-- A step toward decentralized algorithmic infrastructure  
+## Tech Stack Highlights
 
-DQ Labs builds tools that turn participation into intelligence.
+- **Frontend:** Next.js 16, Tailwind CSS, Zustand  
+- **Charts & Analytics:** Lightweight Charts, Recharts  
+- **Backend / On-Chain:** Solana web3.js, Deriverse Indexer  
+- **AI Layer:** Custom Python / Node.js signal analysis  
+- **Distributed Design:** Edge node integration, modular infrastructure  
+
+---
+
+This repository is intended as both a **personal engineering portfolio** and a demonstration of how to combine **full-stack, Web3, and AI infrastructure** to build next-generation trading platforms.
