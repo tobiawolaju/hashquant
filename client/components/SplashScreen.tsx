@@ -35,6 +35,18 @@ export default function SplashScreen() {
     //     return () => clearTimeout(timer);
     // }, [imagesLoaded]);
 
+    // Disable scrolling when splash screen is visible
+    useEffect(() => {
+        if (isVisible) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "auto";
+        }
+        return () => {
+            document.body.style.overflow = "auto";
+        };
+    }, [isVisible]);
+
     const handleStartTrading = () => {
         setIsVisible(false);
     };
