@@ -130,7 +130,70 @@ export const dexscreenerService = {
                 priceChange24h: p.priceChange?.h24 || 0,
                 volume24h: p.volume?.h24 || 0,
                 liquidity: p.liquidity?.usd || 0,
+                dexId: p.dexId,
             }));
+    },
+
+    /**
+     * Fetch trending pairs for a chain by running multiple search queries.
+     * This discovers a broad range of tokens (meme coins, DEX tokens, wrapped assets, LSTs, etc.)
+     * matching what DexScreener's trending page shows.
+     */
+    async getTrendingPairs(chainId: string, limit = 50): Promise<MarketEntry[]> {
+        // Run multiple searches in parallel to discover diverse tokens
+        const searchQueries = [
+            'MON', 'CHOG', 'DUST', 'MONSHI', 'LV', 'emonad',
+            'moncock', 'shramp', 'MONIKA', 'NADS', 'PEPE',
+            'APR', 'gMON', 'shMON', 'WETH', 'WBTC', 'USDC',
+            'TCG', 'UNIT', 'ALLOCA', 'KOL', 'MONA',
+        ];
+
+        try {
+            const results = await Promise.allSettled(
+                searchQueries.map(q => this.searchPairs(q, chainId))
+            );
+
+            const allPairs: DexScreenerPair[] = [];
+            for (const result of results) {
+                if (result.status === 'fulfilled') {
+                    allPairs.push(...result.value);
+                }
+            }
+
+            // Deduplicate by pairAddress
+            const seen = new Set<string>();
+            const uniquePairs = allPairs.filter(p => {
+                if (seen.has(p.pairAddress)) return false;
+                seen.add(p.pairAddress);
+                return true;
+            });
+
+            // Sort by 24h transaction count (trending), then by volume
+            return uniquePairs
+                .filter(p => parseFloat(p.priceUsd || '0') > 0)
+                .sort((a, b) => {
+                    const txA = (a.txns?.h24?.buys || 0) + (a.txns?.h24?.sells || 0);
+                    const txB = (b.txns?.h24?.buys || 0) + (b.txns?.h24?.sells || 0);
+                    if (txB !== txA) return txB - txA;
+                    return (b.volume?.h24 || 0) - (a.volume?.h24 || 0);
+                })
+                .slice(0, limit)
+                .map(p => ({
+                    pairAddress: p.pairAddress,
+                    symbol: `${p.baseToken.symbol}/${p.quoteToken.symbol}`,
+                    baseSymbol: p.baseToken.symbol,
+                    quoteSymbol: p.quoteToken.symbol,
+                    name: p.baseToken.name,
+                    priceUsd: p.priceUsd || '0',
+                    priceChange24h: p.priceChange?.h24 || 0,
+                    volume24h: p.volume?.h24 || 0,
+                    liquidity: p.liquidity?.usd || 0,
+                    dexId: p.dexId,
+                }));
+        } catch (e) {
+            console.error('DexScreener getTrendingPairs failed:', e);
+            return [];
+        }
     },
 
     /**

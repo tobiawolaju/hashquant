@@ -12,7 +12,7 @@ import { mockWalletData } from "@/lib/mockWalletData";
 import { mockOrderBookData } from "@/lib/mockOrderBook";
 import { MarketEntry } from "@/types/token";
 import { dexscreenerService } from "@/services/dexscreenerService";
-import { MONAD_CHAIN_ID, DEFAULT_TOKEN_ADDRESSES, FALLBACK_MARKETS } from "@/lib/monadTokens";
+import { MONAD_CHAIN_ID, FALLBACK_MARKETS } from "@/lib/monadTokens";
 import dynamic from 'next/dynamic';
 
 
@@ -36,27 +36,18 @@ export default function ViewPager() {
         setPrevIndex(currentIndex);
     }
 
-    // Load real markets from DexScreener on mount
+    // Load trending Monad pairs from DexScreener on mount
     useEffect(() => {
         const loadMarkets = async () => {
             try {
-                let allMarkets: MarketEntry[] = [];
+                const trendingMarkets = await dexscreenerService.getTrendingPairs(MONAD_CHAIN_ID, 50);
 
-                for (const tokenAddr of DEFAULT_TOKEN_ADDRESSES) {
-                    const markets = await dexscreenerService.getMarketsForToken(MONAD_CHAIN_ID, tokenAddr, 8);
-                    allMarkets = [...allMarkets, ...markets];
-                }
+                if (trendingMarkets.length > 0) {
+                    setAvailableMarkets(trendingMarkets);
 
-                if (allMarkets.length > 0) {
-                    // Deduplicate by pairAddress
-                    const unique = allMarkets.filter(
-                        (m, i, arr) => arr.findIndex(x => x.pairAddress === m.pairAddress) === i
-                    );
-                    setAvailableMarkets(unique);
-
-                    // Set the first market with a valid pair address as active
-                    if (!activeMarket.pairAddress && unique.length > 0) {
-                        setActiveMarket(unique[0]);
+                    // Set the first market as active if none selected yet
+                    if (!activeMarket.pairAddress) {
+                        setActiveMarket(trendingMarkets[0]);
                     }
                 }
             } catch (error) {
