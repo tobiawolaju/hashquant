@@ -353,6 +353,13 @@ export default function ViewPager() {
 
 function MarketSelector({ activeMarket, markets, onSelect }: { activeMarket: MarketEntry; markets: MarketEntry[]; onSelect: (m: MarketEntry) => void }) {
     const [isOpen, setIsOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+
+    const filteredMarkets = markets.filter(m =>
+        m.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        m.dexId?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <div className="relative">
@@ -374,30 +381,52 @@ function MarketSelector({ activeMarket, markets, onSelect }: { activeMarket: Mar
                         initial={{ opacity: 0, x: 10, scale: 0.95 }}
                         animate={{ opacity: 1, x: 0, scale: 1 }}
                         exit={{ opacity: 0, x: 10, scale: 0.95 }}
-                        className="absolute left-14 top-0 z-[100] w-64 bg-abyss-light/95 glass-heavy rounded-2xl border border-white/10 shadow-2xl p-2 overflow-hidden"
+                        className="absolute left-14 top-0 z-[100] w-72 bg-abyss-light/95 glass-heavy rounded-2xl border border-white/10 shadow-2xl p-2 overflow-hidden flex flex-col"
                     >
-                        <div className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] px-3 py-2 border-b border-white/5 mb-1 flex items-center justify-between">
-                            <span>Monad Markets</span>
-                            <span className="text-neon/50 normal-case tracking-normal">Live</span>
+                        <div className="px-3 py-2 border-b border-white/5 mb-2">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Monad Markets</span>
+                                <span className="text-neon/50 text-[10px] font-bold">Live</span>
+                            </div>
+                            <div className="relative">
+                                <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/30" />
+                                <input
+                                    autoFocus
+                                    type="text"
+                                    placeholder="Search pair or DEX..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full bg-white/5 border border-white/10 rounded-lg py-1.5 pl-8 pr-3 text-[11px] text-white placeholder:text-white/20 focus:outline-none focus:border-neon/50 transition-colors"
+                                />
+                            </div>
                         </div>
-                        <div className="flex flex-col gap-1 max-h-64 overflow-y-auto scrollbar-hide">
-                            {markets.map((market) => (
+
+                        <div className="flex flex-col gap-1 max-h-80 overflow-y-auto scrollbar-hide px-1 pb-1">
+                            {filteredMarkets.map((market) => (
                                 <button
                                     key={market.pairAddress || market.symbol}
                                     onClick={() => {
                                         onSelect(market);
                                         setIsOpen(false);
+                                        setSearchQuery("");
                                     }}
                                     className={`
-                                        flex items-center justify-between px-3 py-2.5 rounded-xl transition-all
+                                        flex items-center justify-between px-3 py-2.5 rounded-xl transition-all group
                                         ${activeMarket.pairAddress === market.pairAddress
                                             ? 'bg-neon/20 text-white border border-neon/30'
                                             : 'hover:bg-white/5 text-white/60 hover:text-white border border-transparent'}
                                     `}
                                 >
-                                    <div className="flex flex-col items-start">
-                                        <span className="text-xs font-black">{market.symbol}</span>
-                                        <span className="text-[9px] opacity-40 font-bold">{market.name}</span>
+                                    <div className="flex flex-col items-start gap-0.5">
+                                        <div className="flex items-center gap-1.5">
+                                            <span className="text-xs font-black">{market.symbol}</span>
+                                            {market.dexId && (
+                                                <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-white/5 text-white/30 group-hover:text-white/50 border border-white/5 uppercase tracking-tighter">
+                                                    {market.dexId}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <span className="text-[9px] opacity-40 font-bold truncate max-w-[120px]">{market.name}</span>
                                     </div>
                                     <div className="flex flex-col items-end gap-0.5">
                                         <span className="text-[10px] font-mono text-white/70">
@@ -412,15 +441,20 @@ function MarketSelector({ activeMarket, markets, onSelect }: { activeMarket: Mar
                                             </span>
                                         )}
                                     </div>
-                                    {activeMarket.pairAddress === market.pairAddress && (
-                                        <div className="w-1.5 h-1.5 rounded-full bg-neon shadow-[0_0_8px_rgba(168,85,247,0.8)] ml-1" />
-                                    )}
                                 </button>
                             ))}
+
                             {markets.length === 0 && (
                                 <div className="flex items-center justify-center py-6 text-white/20 text-[10px] font-bold">
                                     <Loader2 size={14} className="animate-spin mr-2" />
-                                    Loading pairs...
+                                    Scanning Monad...
+                                </div>
+                            )}
+
+                            {markets.length > 0 && filteredMarkets.length === 0 && (
+                                <div className="flex flex-col items-center justify-center py-8 text-white/20">
+                                    <span className="text-xs font-bold mb-1">No matches found</span>
+                                    <span className="text-[10px]">Try a different token or DEX</span>
                                 </div>
                             )}
                         </div>
