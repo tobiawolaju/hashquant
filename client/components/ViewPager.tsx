@@ -308,7 +308,7 @@ export default function ViewPager() {
                 {/* Left Sidebar - Quant Tools (Only visible on Chart) */}
                 {activeTab === "Chart" && (
                     <div
-                        className="absolute left-4 top-1/2 -translate-y-1/2 z-[70] flex flex-col gap-2 p-1.5 bg-abyss-light/60 glass-heavy rounded-2xl shadow-2xl border border-white/5 touch-none"
+                        className="absolute left-4 top-1/2 -translate-y-1/2 z-[70] flex flex-col gap-2 p-1.5 bg-abyss-light/60 glass-heavy rounded-full shadow-2xl border border-white/5 touch-none"
                         onPointerDown={(e) => e.stopPropagation()}
                         onClick={(e) => e.stopPropagation()}
                     >
@@ -373,7 +373,7 @@ function MarketSelector({ activeMarket, markets, onSelect }: { activeMarket: Mar
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={`
-                    w-12 h-14 flex flex-col items-center justify-center rounded-xl transition-all duration-200 gap-1
+                    w-12 h-14 flex flex-col items-center justify-center rounded-full transition-all duration-200 gap-1
                     ${isOpen ? 'bg-neon text-white shadow-[0_0_15px_rgba(168,85,247,0.4)]' : 'text-muted hover:bg-white/5 hover:text-white'}
                 `}
             >
@@ -494,7 +494,7 @@ function ToolButton({ icon, active, onClick, className = "" }: { icon: React.Rea
             }}
             onPointerDown={(e) => e.stopPropagation()}
             className={`
-            w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-200
+            w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200
             ${active
                     ? 'bg-neon text-white shadow-[0_0_15px_rgba(168,85,247,0.4)]'
                     : 'text-muted hover:bg-white/5 hover:text-white'}
