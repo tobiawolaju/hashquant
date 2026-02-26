@@ -6,9 +6,9 @@ import { CandleData, CandleAggregator, Timeframe } from '../services/candleAggre
  * useMarketData
  * 
  * Custom hook to manage the lifecycle of market data for the trading chart.
- * Handles the initial historical load and the live subscription signatures.
+ * Now accepts a pairAddress (DexScreener pair) instead of a generic marketId.
  */
-export function useMarketData(marketId: string, timeframe: Timeframe) {
+export function useMarketData(pairAddress: string, timeframe: Timeframe) {
     const [candles, setCandles] = useState<CandleData[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentPrice, setCurrentPrice] = useState<number | null>(null);
@@ -20,9 +20,14 @@ export function useMarketData(marketId: string, timeframe: Timeframe) {
     const onCandleUpdateRef = useRef<((candle: CandleData) => void) | null>(null);
 
     const loadHistoricalData = useCallback(async () => {
+        if (!pairAddress) {
+            setLoading(false);
+            return;
+        }
+
         setLoading(true);
         try {
-            const trades = await marketService.fetchHistory(marketId);
+            const trades = await marketService.fetchHistory(pairAddress);
             const historicalCandles = CandleAggregator.buildHistoricalCandles(trades, timeframe);
 
             setCandles(historicalCandles);
@@ -35,12 +40,14 @@ export function useMarketData(marketId: string, timeframe: Timeframe) {
         } finally {
             setLoading(false);
         }
-    }, [marketId, timeframe]);
+    }, [pairAddress, timeframe]);
 
     useEffect(() => {
+        if (!pairAddress) return;
+
         loadHistoricalData();
 
-        const unsubscribe = marketService.subscribeTrades(marketId, (trade: TradeData) => {
+        const unsubscribe = marketService.subscribeTrades(pairAddress, (trade: TradeData) => {
             // 1. Calculate the update
             const { candle, isNew } = CandleAggregator.updateCurrentCandle(
                 lastCandleRef.current,
@@ -67,7 +74,7 @@ export function useMarketData(marketId: string, timeframe: Timeframe) {
         return () => {
             unsubscribe();
         };
-    }, [marketId, timeframe, loadHistoricalData]);
+    }, [pairAddress, timeframe, loadHistoricalData]);
 
     const setOnCandleUpdate = useCallback((callback: (candle: CandleData) => void) => {
         onCandleUpdateRef.current = callback;

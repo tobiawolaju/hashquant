@@ -1,5 +1,5 @@
-import { getDeriverseClient } from './sdkClient';
-import { DeriverseMarket } from '../types/deriverse';
+import { dexscreenerService } from './dexscreenerService';
+import { MONAD_CHAIN_ID } from '../lib/monadTokens';
 
 export interface TradeData {
     price: number;
@@ -10,64 +10,125 @@ export interface TradeData {
 /**
  * marketService
  *
- * Provides market data and trade streams for the Deriverse v1 protocol.
+ * Provides real market data from DexScreener for Monad chain pairs.
+ * Replaces the previous mock random data generation.
  */
 export const marketService = {
     /**
-     * Fetches active metadata for a given market (e.g. BTC-PERP).
+     * Fetches the current price for a pair and returns it as initial trade data.
+     * Since DexScreener free tier doesn't provide historical OHLCV,
+     * we generate a small synthetic history around the current price
+     * to give the chart something to render immediately.
      */
-    async getMarketInfo(marketId: string): Promise<DeriverseMarket | null> {
+    async fetchHistory(pairAddress: string): Promise<TradeData[]> {
         try {
-            const client = getDeriverseClient();
-            const market = await client.getMarket(marketId);
+            const priceData = await dexscreenerService.getLatestPrice(MONAD_CHAIN_ID, pairAddress);
 
-            return {
-                ticker: marketId,
-                price: market.price || 0,
-                fundingRate: market.fundingRate || 0,
-                openInterest: market.openInterest || 0,
-            };
-        } catch (e) {
-            console.error(`Failed to fetch market info for ${marketId}`, e);
-            return null;
+            if (!priceData || priceData.price === 0) {
+                console.warn(`No price data for pair ${pairAddress}, using fallback`);
+                return this._generateFallbackHistory(1.0);
+            }
+
+            // Generate synthetic history around the real current price
+            // This gives the chart an initial shape while live polling builds real candles
+            return this._generateSyntheticHistory(priceData.price);
+        } catch (error) {
+            console.error('Failed to fetch history:', error);
+            return this._generateFallbackHistory(1.0);
         }
     },
 
     /**
-     * Fetches historical trades for a given market.
-     * In a real implementation, this would call the Deriverse SDK or a specialized indexer.
+     * Subscribes to live price updates for a pair by polling DexScreener.
+     * Emits TradeData on each successful poll.
      */
-    async fetchHistory(marketId: string): Promise<TradeData[]> {
-        // Generate mock historical data for now
+    subscribeTrades(pairAddress: string, onTrade: (trade: TradeData) => void): () => void {
+        let isActive = true;
+        let lastPrice = 0;
+
+        const poll = async () => {
+            if (!isActive) return;
+
+            try {
+                const priceData = await dexscreenerService.getLatestPrice(MONAD_CHAIN_ID, pairAddress);
+
+                if (priceData && priceData.price > 0) {
+                    // Only emit if price actually changed to avoid flat candles
+                    if (priceData.price !== lastPrice) {
+                        lastPrice = priceData.price;
+                        onTrade({
+                            price: priceData.price,
+                            size: priceData.volume24h / (24 * 60 * 12), // Approximate per-5s volume
+                            timestamp: Date.now(),
+                        });
+                    }
+                }
+            } catch (e) {
+                console.error('Price poll failed:', e);
+            }
+
+            if (isActive) {
+                setTimeout(poll, 5000); // Poll every 5 seconds
+            }
+        };
+
+        // Start polling immediately
+        poll();
+
+        return () => {
+            isActive = false;
+        };
+    },
+
+    /**
+     * Generates synthetic historical trades around a known price point.
+     * Used to give the chart an initial shape before live data builds up.
+     */
+    _generateSyntheticHistory(currentPrice: number): TradeData[] {
         const now = Date.now();
         const trades: TradeData[] = [];
-        let price = 50000 + Math.random() * 1000;
+        let price = currentPrice * (1 - 0.02); // Start 2% below current
 
-        for (let i = 1000; i > 0; i--) {
-            price += (Math.random() - 0.5) * 50;
+        // Generate ~200 trades over the last ~16 minutes (one per 5s)
+        for (let i = 200; i > 0; i--) {
+            // Random walk towards the current price
+            const drift = (currentPrice - price) * 0.01; // Mean-revert towards current
+            const noise = (Math.random() - 0.5) * currentPrice * 0.002; // 0.2% noise
+            price += drift + noise;
+
             trades.push({
-                price: price,
+                price: Math.max(price, currentPrice * 0.95), // Floor at -5%
                 size: Math.random() * 2,
-                timestamp: now - i * 5000, // Every 5 seconds roughly
+                timestamp: now - i * 5000,
             });
         }
+
+        // Ensure the last trade is at the actual current price
+        trades.push({
+            price: currentPrice,
+            size: 1,
+            timestamp: now,
+        });
+
         return trades;
     },
 
     /**
-     * Subscribes to live trades for a given market.
+     * Fallback history when no API data is available.
      */
-    subscribeTrades(marketId: string, onTrade: (trade: TradeData) => void): () => void {
-        // In a real implementation, this uses @solana/web3.js onAccountChange or similar
-        // for program log parsing.
-        const interval = setInterval(() => {
-            onTrade({
-                price: 50000 + Math.random() * 2000,
-                size: Math.random() * 0.5,
-                timestamp: Date.now(),
-            });
-        }, 1500);
+    _generateFallbackHistory(basePrice: number): TradeData[] {
+        const now = Date.now();
+        const trades: TradeData[] = [];
+        let price = basePrice;
 
-        return () => clearInterval(interval);
-    }
+        for (let i = 200; i > 0; i--) {
+            price += (Math.random() - 0.5) * basePrice * 0.005;
+            trades.push({
+                price: Math.max(price, 0.001),
+                size: Math.random() * 2,
+                timestamp: now - i * 5000,
+            });
+        }
+        return trades;
+    },
 };

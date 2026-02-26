@@ -1,7 +1,9 @@
 import { create } from "zustand";
 import { IndexerTrade } from "../types/deriverse";
+import { MarketEntry } from "../types/token";
 import { analyticsService } from "../services/analyticsService";
-import { journalEntries } from "./mockData"; // Initial fallback
+import { journalEntries } from "./mockData"; // Initial fallback for journal
+import { FALLBACK_MARKETS } from "./monadTokens";
 
 export type TabType = "Chart" | "Orderbook" | "Wallet";
 
@@ -29,8 +31,14 @@ interface DeriverseState {
     metrics: ReturnType<typeof analyticsService.computeMetrics>;
     setTrades: (trades: IndexerTrade[]) => void;
     refreshAnalytics: () => void;
-    activeMarket: string;
-    setActiveMarket: (market: string) => void;
+
+    // Market State — now stores the full MarketEntry + pair address
+    activeMarket: MarketEntry;
+    setActiveMarket: (market: MarketEntry) => void;
+
+    // Available markets loaded from DexScreener
+    availableMarkets: MarketEntry[];
+    setAvailableMarkets: (markets: MarketEntry[]) => void;
 }
 
 // Initial metrics structure
@@ -59,8 +67,8 @@ export const useDeriverseStore = create<DeriverseState>((set, get) => ({
     setAiInsightOpen: (open) => set({ aiInsightOpen: open }),
 
     // Analytics Implementation
-    trades: [], // In real app, fetch from indexer
-    metrics: analyticsService.computeMetrics(journalEntries as any), // Seed with mock data initially
+    trades: [],
+    metrics: analyticsService.computeMetrics(journalEntries as any),
     setTrades: (trades) => {
         const metrics = analyticsService.computeMetrics(trades);
         set({ trades, metrics });
@@ -70,7 +78,11 @@ export const useDeriverseStore = create<DeriverseState>((set, get) => ({
         const metrics = analyticsService.computeMetrics(trades.length > 0 ? trades : journalEntries as any);
         set({ metrics });
     },
-    // Market Implementation
-    activeMarket: "SOL/USDC",
+
+    // Market Implementation — defaults to the first fallback market
+    activeMarket: FALLBACK_MARKETS[0],
     setActiveMarket: (market) => set({ activeMarket: market }),
+
+    availableMarkets: FALLBACK_MARKETS,
+    setAvailableMarkets: (markets) => set({ availableMarkets: markets }),
 }));

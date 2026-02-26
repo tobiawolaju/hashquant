@@ -2,15 +2,17 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useDeriverseStore, type TabType } from "@/lib/store";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LightweightChart } from "./LightweightChart";
 import { useMarketData } from "../hooks/useMarketData";
 import { Timeframe } from "../services/candleAggregator";
-import { Search, ChevronDown, Clock, MousePointer2, Slash, Minus, Ruler, Magnet, Trash2, LayoutGrid, BookOpen } from "lucide-react";
+import { Search, ChevronDown, Clock, MousePointer2, Slash, Minus, Ruler, Magnet, Trash2, LayoutGrid, BookOpen, TrendingUp, TrendingDown, Loader2 } from "lucide-react";
 
 import { mockWalletData } from "@/lib/mockWalletData";
 import { mockOrderBookData } from "@/lib/mockOrderBook";
-import { mockMarkets } from "@/lib/mockTokens";
+import { MarketEntry } from "@/types/token";
+import { dexscreenerService } from "@/services/dexscreenerService";
+import { MONAD_CHAIN_ID, DEFAULT_TOKEN_ADDRESSES, FALLBACK_MARKETS } from "@/lib/monadTokens";
 import dynamic from 'next/dynamic';
 
 
@@ -20,7 +22,7 @@ const tabs: TabType[] = ["Chart", "Orderbook", "Wallet"];
 const timeframes: Timeframe[] = ['1m', '5m', '15m', '1h'];
 
 export default function ViewPager() {
-    const { activeTab, setActiveTab, activeMarket, setActiveMarket } = useDeriverseStore();
+    const { activeTab, setActiveTab, activeMarket, setActiveMarket, availableMarkets, setAvailableMarkets } = useDeriverseStore();
     const currentIndex = tabs.indexOf(activeTab);
     const [prevIndex, setPrevIndex] = useState(currentIndex);
     const [direction, setDirection] = useState(0);
@@ -34,8 +36,39 @@ export default function ViewPager() {
         setPrevIndex(currentIndex);
     }
 
-    // We explicitly request data for the active market from the store
-    const { candles, loading, currentPrice, setOnCandleUpdate } = useMarketData(activeMarket, timeframe);
+    // Load real markets from DexScreener on mount
+    useEffect(() => {
+        const loadMarkets = async () => {
+            try {
+                let allMarkets: MarketEntry[] = [];
+
+                for (const tokenAddr of DEFAULT_TOKEN_ADDRESSES) {
+                    const markets = await dexscreenerService.getMarketsForToken(MONAD_CHAIN_ID, tokenAddr, 8);
+                    allMarkets = [...allMarkets, ...markets];
+                }
+
+                if (allMarkets.length > 0) {
+                    // Deduplicate by pairAddress
+                    const unique = allMarkets.filter(
+                        (m, i, arr) => arr.findIndex(x => x.pairAddress === m.pairAddress) === i
+                    );
+                    setAvailableMarkets(unique);
+
+                    // Set the first market with a valid pair address as active
+                    if (!activeMarket.pairAddress && unique.length > 0) {
+                        setActiveMarket(unique[0]);
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load markets:', error);
+            }
+        };
+
+        loadMarkets();
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // We request data for the active market's pair address
+    const { candles, loading, currentPrice, setOnCandleUpdate } = useMarketData(activeMarket.pairAddress, timeframe);
 
 
     const variants = {
@@ -67,7 +100,23 @@ export default function ViewPager() {
 
             {/* Header Controls - Centered (Only on Chart) */}
             {activeTab === "Chart" && (
-                <div className="absolute top-8 left-1/2 -translate-x-1/2 z-[60] flex items-center justify-center">
+                <div className="absolute top-8 left-1/2 -translate-x-1/2 z-[60] flex flex-col md:flex-row items-center justify-center gap-2 md:gap-3">
+                    {/* Active Market Display */}
+                    <div className="flex items-center gap-2 bg-abyss-light/40 glass rounded-full px-4 py-2 shadow-2xl">
+                        <span className="text-xs font-black text-white tracking-tighter">{activeMarket.symbol || 'Loading...'}</span>
+                        {currentPrice !== null && (
+                            <span className="text-xs font-mono text-neon">
+                                ${currentPrice.toFixed(currentPrice < 1 ? 6 : 2)}
+                            </span>
+                        )}
+                        {activeMarket.priceChange24h !== 0 && (
+                            <span className={`text-[10px] font-bold flex items-center gap-0.5 ${activeMarket.priceChange24h >= 0 ? 'text-buy' : 'text-sell'}`}>
+                                {activeMarket.priceChange24h >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+                                {activeMarket.priceChange24h >= 0 ? '+' : ''}{activeMarket.priceChange24h.toFixed(2)}%
+                            </span>
+                        )}
+                    </div>
+
                     {/* Timeframe Selector */}
                     <div className="flex bg-abyss-light/40 glass rounded-full p-1 gap-1 shadow-2xl">
                         {timeframes.map(tf => (
@@ -102,13 +151,6 @@ export default function ViewPager() {
                         }}
                         className="absolute inset-0 w-full h-full"
                     >
-                        {/* 
-                            Note: The Chart is now hoisted OUTSIDE of AnimatePresence.
-                            This is to prevent "Object is disposed" errors from LightweightCharts
-                            when Framer Motion destroys the DOM element while polling continues.
-                            We keep it empty here to reserve the animated slide space if needed.
-                        */}
-
 
 
                         {activeTab === "Orderbook" && (
@@ -150,12 +192,14 @@ export default function ViewPager() {
                                     <div className="relative flex items-center justify-between px-2">
                                         <div className="flex flex-col">
                                             <span className="text-2xl font-black text-white tracking-tighter drop-shadow-[0_0_15px_rgba(168,85,247,0.4)]">
-                                                {currentPrice?.toFixed(2) || "96,500.00"}
+                                                {currentPrice?.toFixed(currentPrice < 1 ? 6 : 2) || activeMarket.priceUsd || "—"}
                                             </span>
                                             <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest -mt-1">Mid Price</span>
                                         </div>
                                         <div className="flex flex-col items-end">
-                                            <span className="text-xs font-mono text-neon">+$1,245.20</span>
+                                            <span className={`text-xs font-mono ${activeMarket.priceChange24h >= 0 ? 'text-neon' : 'text-sell'}`}>
+                                                {activeMarket.priceChange24h >= 0 ? '+' : ''}{activeMarket.priceChange24h.toFixed(2)}%
+                                            </span>
                                             <span className="text-[10px] font-mono text-white/20">Spread: 1.00</span>
                                         </div>
                                     </div>
@@ -187,8 +231,8 @@ export default function ViewPager() {
 
                                 {/* Legend or Volume summary */}
                                 <div className="mt-auto py-4 border-t border-white/5 flex justify-between text-[10px] font-black text-white/20 tracking-tighter uppercase">
-                                    <span>Liquidity Depth: 25.4M</span>
-                                    <span>24h Vol: 1.2B</span>
+                                    <span>Liquidity: {activeMarket.liquidity > 0 ? `$${(activeMarket.liquidity / 1e6).toFixed(2)}M` : '—'}</span>
+                                    <span>24h Vol: {activeMarket.volume24h > 0 ? `$${(activeMarket.volume24h / 1e6).toFixed(2)}M` : '—'}</span>
                                 </div>
                             </div>
                         )}
@@ -245,8 +289,11 @@ export default function ViewPager() {
                 >
                     {loading ? (
                         <div className="w-full h-full flex items-center justify-center bg-abyss">
-                            <div className="text-neon/30 text-xs font-black tracking-[0.3em] uppercase animate-pulse">
-                                Synchronizing Nodes...
+                            <div className="flex flex-col items-center gap-3">
+                                <Loader2 size={24} className="text-neon animate-spin" />
+                                <div className="text-neon/30 text-xs font-black tracking-[0.3em] uppercase">
+                                    Connecting to Monad...
+                                </div>
                             </div>
                         </div>
                     ) : (
@@ -270,6 +317,7 @@ export default function ViewPager() {
 
                         <MarketSelector
                             activeMarket={activeMarket}
+                            markets={availableMarkets}
                             onSelect={setActiveMarket}
                         />
 
@@ -312,7 +360,7 @@ export default function ViewPager() {
     );
 }
 
-function MarketSelector({ activeMarket, onSelect }: { activeMarket: string; onSelect: (m: string) => void }) {
+function MarketSelector({ activeMarket, markets, onSelect }: { activeMarket: MarketEntry; markets: MarketEntry[]; onSelect: (m: MarketEntry) => void }) {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -325,7 +373,7 @@ function MarketSelector({ activeMarket, onSelect }: { activeMarket: string; onSe
                 `}
             >
                 <span className="text-[8px] font-black tracking-tighter uppercase opacity-50">Pair</span>
-                <span className="text-[10px] font-black tracking-tighter leading-none">{activeMarket.split('/')[0]}</span>
+                <span className="text-[10px] font-black tracking-tighter leading-none">{activeMarket.baseSymbol || '...'}</span>
                 <ChevronDown size={10} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
             </button>
 
@@ -335,22 +383,23 @@ function MarketSelector({ activeMarket, onSelect }: { activeMarket: string; onSe
                         initial={{ opacity: 0, x: 10, scale: 0.95 }}
                         animate={{ opacity: 1, x: 0, scale: 1 }}
                         exit={{ opacity: 0, x: 10, scale: 0.95 }}
-                        className="absolute left-14 top-0 z-[100] w-48 bg-abyss-light/95 glass-heavy rounded-2xl border border-white/10 shadow-2xl p-2 overflow-hidden"
+                        className="absolute left-14 top-0 z-[100] w-64 bg-abyss-light/95 glass-heavy rounded-2xl border border-white/10 shadow-2xl p-2 overflow-hidden"
                     >
-                        <div className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] px-3 py-2 border-b border-white/5 mb-1">
-                            Select Market
+                        <div className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] px-3 py-2 border-b border-white/5 mb-1 flex items-center justify-between">
+                            <span>Monad Markets</span>
+                            <span className="text-neon/50 normal-case tracking-normal">Live</span>
                         </div>
-                        <div className="flex flex-col gap-1">
-                            {mockMarkets.map((market) => (
+                        <div className="flex flex-col gap-1 max-h-64 overflow-y-auto scrollbar-hide">
+                            {markets.map((market) => (
                                 <button
-                                    key={market.id}
+                                    key={market.pairAddress || market.symbol}
                                     onClick={() => {
-                                        onSelect(market.symbol);
+                                        onSelect(market);
                                         setIsOpen(false);
                                     }}
                                     className={`
                                         flex items-center justify-between px-3 py-2.5 rounded-xl transition-all
-                                        ${activeMarket === market.symbol
+                                        ${activeMarket.pairAddress === market.pairAddress
                                             ? 'bg-neon/20 text-white border border-neon/30'
                                             : 'hover:bg-white/5 text-white/60 hover:text-white border border-transparent'}
                                     `}
@@ -359,11 +408,30 @@ function MarketSelector({ activeMarket, onSelect }: { activeMarket: string; onSe
                                         <span className="text-xs font-black">{market.symbol}</span>
                                         <span className="text-[9px] opacity-40 font-bold">{market.name}</span>
                                     </div>
-                                    {activeMarket === market.symbol && (
-                                        <div className="w-1.5 h-1.5 rounded-full bg-neon shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+                                    <div className="flex flex-col items-end gap-0.5">
+                                        <span className="text-[10px] font-mono text-white/70">
+                                            {market.priceUsd !== '—' && market.priceUsd !== '0'
+                                                ? `$${parseFloat(market.priceUsd) < 1 ? parseFloat(market.priceUsd).toFixed(6) : parseFloat(market.priceUsd).toFixed(2)}`
+                                                : '—'
+                                            }
+                                        </span>
+                                        {market.priceChange24h !== 0 && (
+                                            <span className={`text-[9px] font-bold ${market.priceChange24h >= 0 ? 'text-buy' : 'text-sell'}`}>
+                                                {market.priceChange24h >= 0 ? '+' : ''}{market.priceChange24h.toFixed(2)}%
+                                            </span>
+                                        )}
+                                    </div>
+                                    {activeMarket.pairAddress === market.pairAddress && (
+                                        <div className="w-1.5 h-1.5 rounded-full bg-neon shadow-[0_0_8px_rgba(168,85,247,0.8)] ml-1" />
                                     )}
                                 </button>
                             ))}
+                            {markets.length === 0 && (
+                                <div className="flex items-center justify-center py-6 text-white/20 text-[10px] font-bold">
+                                    <Loader2 size={14} className="animate-spin mr-2" />
+                                    Loading pairs...
+                                </div>
+                            )}
                         </div>
                     </motion.div>
                 )}
