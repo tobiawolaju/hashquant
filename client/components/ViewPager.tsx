@@ -94,6 +94,13 @@ export default function ViewPager() {
                 <div className="absolute top-8 left-1/2 -translate-x-1/2 z-[60] flex flex-col md:flex-row items-center justify-center gap-2 md:gap-3">
                     {/* Active Market Display */}
                     <div className="flex items-center gap-2 bg-abyss-light/40 glass rounded-full px-4 py-2 shadow-2xl">
+                        {activeMarket.iconUrl ? (
+                            <img src={activeMarket.iconUrl} alt={activeMarket.symbol} className="w-4 h-4 rounded-full border border-white/10" />
+                        ) : (
+                            <div className="w-4 h-4 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[8px] font-black text-white/30 uppercase">
+                                {activeMarket.baseSymbol?.[0]}
+                            </div>
+                        )}
                         <span className="text-xs font-black text-white tracking-tighter">{activeMarket.symbol || 'Loading...'}</span>
                         {currentPrice !== null && (
                             <span className="text-xs font-mono text-neon">
@@ -366,13 +373,17 @@ function MarketSelector({ activeMarket, markets, onSelect }: { activeMarket: Mar
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={`
-                    w-10 h-12 flex flex-col items-center justify-center rounded-xl transition-all duration-200 gap-0.5
-                    ${isOpen ? 'bg-neon text-white' : 'text-muted hover:bg-white/5 hover:text-white'}
+                    w-12 h-14 flex flex-col items-center justify-center rounded-xl transition-all duration-200 gap-1
+                    ${isOpen ? 'bg-neon text-white shadow-[0_0_15px_rgba(168,85,247,0.4)]' : 'text-muted hover:bg-white/5 hover:text-white'}
                 `}
             >
-                <span className="text-[8px] font-black tracking-tighter uppercase opacity-50">Pair</span>
+                {activeMarket.iconUrl ? (
+                    <img src={activeMarket.iconUrl} alt={activeMarket.symbol} className="w-5 h-5 rounded-full border border-white/20 mb-0.5 shadow-sm" />
+                ) : (
+                    <span className="text-[8px] font-black tracking-tighter uppercase opacity-50">Pair</span>
+                )}
                 <span className="text-[10px] font-black tracking-tighter leading-none">{activeMarket.baseSymbol || '...'}</span>
-                <ChevronDown size={10} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown size={10} className={`mt-0.5 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
             </button>
 
             <AnimatePresence>
@@ -419,6 +430,13 @@ function MarketSelector({ activeMarket, markets, onSelect }: { activeMarket: Mar
                                 >
                                     <div className="flex flex-col items-start gap-0.5">
                                         <div className="flex items-center gap-1.5">
+                                            {market.iconUrl ? (
+                                                <img src={market.iconUrl} alt={market.symbol} className="w-3.5 h-3.5 rounded-full border border-white/10" />
+                                            ) : (
+                                                <div className="w-3.5 h-3.5 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[7px] font-black text-white/30 truncate uppercase">
+                                                    {market.baseSymbol?.[0]}
+                                                </div>
+                                            )}
                                             <span className="text-xs font-black">{market.symbol}</span>
                                             {market.dexId && (
                                                 <span className="text-[7px] font-black px-1.5 py-0.5 rounded bg-white/5 text-white/30 group-hover:text-white/50 border border-white/5 uppercase tracking-tighter truncate max-w-[60px]">
@@ -428,7 +446,7 @@ function MarketSelector({ activeMarket, markets, onSelect }: { activeMarket: Mar
                                                 </span>
                                             )}
                                         </div>
-                                        <span className="text-[9px] opacity-40 font-bold truncate max-w-[120px]">{market.name}</span>
+                                        <span className="text-[9px] opacity-40 font-bold truncate max-w-[120px] ml-[1.15rem] leading-none">{market.name}</span>
                                     </div>
                                     <div className="flex flex-col items-end gap-0.5">
                                         <span className="text-[10px] font-mono text-white/70">
