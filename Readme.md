@@ -73,6 +73,26 @@ By combining these layers, DQuant gives traders actionable intelligence and prov
 ## System Architecture
 
 ```mermaid
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'background': '#05070D',
+    'primaryColor': '#111318',
+    'secondaryColor': '#0B0F1A',
+    'tertiaryColor': '#141826',
+
+    'primaryTextColor': '#E5E7EB',
+    'secondaryTextColor': '#C4B5FD',
+
+    'primaryBorderColor': '#8B5CF6',
+    'lineColor': '#A855F7',
+
+    'nodeBorder': '#8B5CF6',
+    'clusterBorder': '#8B5CF6',
+
+    'fontFamily': 'Inter, sans-serif'
+  }
+}}%%
 graph TD
     subgraph "Frontend Layer (Next.js 16)"
         UI["UI Components (Radix, Tailwind)"]
