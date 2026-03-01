@@ -2,43 +2,79 @@
 
 Dominus Quant is a narrative-driven, AI-assisted crypto trading platform designed for real-time market insight and optional automated spot execution. Built as a personal project, it’s a proof-of-concept for **next-generation quant infrastructure**, combining behavioral analytics, distributed intelligence, and portfolio storytelling.
 
-This project demonstrates what’s possible when **trading intelligence, narrative detection, and modular infrastructure** meet. It’s ready for scale, edge computing integration, and community-driven execution.
+This project demonstrates what’s possible when **trading intelligence, narrative detection, and modular infrastructure** meet.
+
+---
+
+## 📸 Platform Screenshots
+
+### Dashboard Overview
+![Dashboard](./screenshots/1.jpg)
+
+### Market Analysis Interface
+![Market Analysis](./screenshots/2.jpg)
+
+### Trade Execution Panel
+![Trade Execution](./screenshots/3.jpg)
+
+### Portfolio Analytics
+![Portfolio Analytics](./screenshots/4.jpg)
+
+### Behavioral Insights Engine
+![Behavioral Insights](./screenshots/5.jpg)
+
+### Trade Journal
+![Trade Journal](./screenshots/6.jpg)
+
+### Performance Metrics
+![Performance Metrics](./screenshots/7.jpg)
+
+### AI Confidence Scoring
+![AI Scoring](./screenshots/8.jpg)
+
+### Automated Pool Mode
+![Pool Mode](./screenshots/9.jpg)
+
+### Mobile / Responsive View
+![Mobile View](./screenshots/10.jpg)
 
 ---
 
 ## Why DQuant Matters
 
-Markets move on **narratives**, not just price.  
+Markets move on **narratives**, not just price.
+
 Dominus Quant tracks:
 
-- **Ecosystem signals** – tweets, hackathons, announcements, social activity  
-- **Market microstructure** – order flow, liquidity shifts, volume surges  
-- **Behavioral patterns** – trading psychology, FOMO, and performance decay  
+- Ecosystem signals — tweets, hackathons, announcements  
+- Market microstructure — liquidity shifts, volume spikes  
+- Behavioral patterns — FOMO cycles, performance decay  
 
-By combining these layers, DQuant gives both manual traders **actionable insight** and automated pool participants a **safe, risk-managed execution engine**.
+By combining these layers, DQuant gives traders actionable intelligence and provides automated pool participants a risk-managed execution engine.
 
 ---
 
 ## Core Product Features
 
 ### 1. Hybrid Trading Platform
-- **Manual Mode:** Traders receive signals and confidence scores, but retain full control  
-- **Automated Pool Mode:** Users allocate capital, press “play,” and trades are executed via the Dominus Engine with risk limits  
+- **Manual Mode:** Traders receive signals + confidence scores  
+- **Automated Pool Mode:** Allocate capital and let the engine execute with guardrails  
 
 ### 2. Narrative Portfolio Analytics
-- Converts raw trade data into **story-driven insights**  
-- Highlights patterns, peak focus periods, and mistakes  
-- AI-driven recommendations prevent self-sabotage and improve discipline  
+- Converts trade data into story-driven insights  
+- Identifies performance peaks and mistakes  
+- AI-driven behavioral correction  
 
 ### 3. Deep AI Insights
-- Behavioral risk analytics: execution timing, revenge trades, overtrading  
-- Performance decay detection and adaptive guidance  
-- Probabilistic trade confidence scoring  
+- Execution timing analysis  
+- Revenge trade detection  
+- Overtrading warnings  
+- Probabilistic trade scoring  
 
 ### 4. Trading Journal & Dashboard
-- Automatic indexing of trades with metadata: pair, date, PnL, strategy notes  
-- Visual replay of trades with structured insights  
-- Key metrics: PnL, win rate, long/short bias, best session, largest gain/loss  
+- Automatic trade indexing  
+- Visual trade replay  
+- Key metrics: PnL, win rate, bias, session performance  
 
 ---
 
@@ -84,24 +120,50 @@ graph TD
     SOL_CONN --> SOL_BC
 ```
 
-- **Frontend:** Next.js 16, Tailwind CSS, Zustand  
-- **Analytics & Charts:** Lightweight Charts (trade playback), Recharts (portfolio visualizations)  
-- **Backend & On-Chain:** Solana Web3.js, custom Deriverse indexer, optional capital pool contracts  
-- **AI Layer:** Real-time behavioral signal analysis  
-- **Distributed Ready:** Modular design for edge-device contribution and signal aggregation  
+---
 
-This stack demonstrates **full-stack Web3 engineering**, from UI/UX to on-chain integration, distributed systems, and AI intelligence.
+Tech Stack
+
+Frontend: Next.js 16, Tailwind CSS, Zustand
+
+Charts: Lightweight Charts, Recharts
+
+On-Chain: Solana Web3.js
+
+Auth: Privy
+
+AI Layer: Real-time behavioral analysis
+
+Architecture: Modular, distributed-ready
+
+
 
 ---
 
-- **Strategically differentiated:** Leverages narrative momentum + market microstructure  
-- **Modular and scalable:** Edge contribution and pool execution ready  
+Roadmap
+
+Expand distributed signal layer
+
+Add multi-chain support
+
+Enhance AI behavioral modeling
+
+Launch community-governed quant pool
 
 
-## Next Steps
 
-- Expand distributed signal layer (edge nodes contribute intelligence)  
-- Add multi-asset support across Solana, Monad, or other L1/L2  
-- Integrate more AI-driven behavioral guidance and risk modeling  
-- Turn automated pool mode into a **community-governed quant engine**
 ---
+
+Getting Started
+
+git clone https://github.com/yourusername/dominus-quant.git
+cd dominus-quant
+npm install
+npm run dev
+
+
+---
+
+License
+
+MIT — open for experimentation and research.
