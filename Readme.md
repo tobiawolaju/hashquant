@@ -166,16 +166,42 @@ Launch community-governed quant pool
 
 ---
 
-Getting Started
+## 🚀 Vision
 
-git clone https://github.com/yourusername/dominus-quant.git
-cd dominus-quant
-npm install
-npm run dev
+Dominus Quant is building narrative-aware quant infrastructure for the next generation of on-chain markets.
 
+The goal is not just signal generation —
+but behavioral intelligence, capital efficiency, and distributed edge execution.
 
 ---
 
-License
+## 🔮 Future Expansion
+
+- Multi-chain signal aggregation  
+- Edge-node intelligence contribution  
+- Community-governed quant pools  
+- AI behavioral risk suppression  
+
+---
+
+## ⭐ Project Activity
+
+<p align="center">
+  <img src="https://img.shields.io/github/stars/tobiawolaju/dominus-quant?style=for-the-badge&color=8B5CF6" />
+  <img src="https://img.shields.io/github/forks/tobiawolaju/dominus-quant?style=for-the-badge&color=A855F7" />
+  <img src="https://img.shields.io/github/issues/tobiawolaju/dominus-quant?style=for-the-badge&color=6366F1" />
+  <img src="https://img.shields.io/github/last-commit/tobiawolaju/dominus-quant?style=for-the-badge&color=9333EA" />
+</p>
+
+---
+
+## 🤝 Contributing
+
+DQuant is modular quant infrastructure.  
+Architecture discussions, signal experiments, and AI layer contributions are welcome.
+
+Open an issue or submit a PR.
+
+## License
 
 MIT — open for experimentation and research.
