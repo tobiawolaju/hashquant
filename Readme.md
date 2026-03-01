@@ -17,7 +17,7 @@ This project demonstrates what’s possible when **trading intelligence, narrati
 
 ## 📸 Platform Screenshots
 
-<div style="display:flex; overflow-x:auto; gap:12px; padding:10px 0;">
+<div style="display:flex; overflow-x:auto; gap:12px; padding:10px 0;white-space: nowrap;">
 
   <img src="./screenshots/1.jpg" height="260"/>
   <img src="./screenshots/2.jpg" height="260"/>
