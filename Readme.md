@@ -15,7 +15,7 @@ This project demonstrates what’s possible when **trading intelligence, narrati
 
 ---
 
-## 📸 Platform Screenshots
+## Screenshots
 
 <div style="display:flex; overflow-x:auto; gap:12px; padding:10px 0;white-space: nowrap;">
 
@@ -166,7 +166,7 @@ Launch community-governed quant pool
 
 ---
 
-## 🚀 Vision
+##  Vision
 
 Dominus Quant is building narrative-aware quant infrastructure for the next generation of on-chain markets.
 
@@ -175,7 +175,7 @@ but behavioral intelligence, capital efficiency, and distributed edge execution.
 
 ---
 
-## 🔮 Future Expansion
+##  Future Expansion
 
 - Multi-chain signal aggregation  
 - Edge-node intelligence contribution  
@@ -195,7 +195,7 @@ but behavioral intelligence, capital efficiency, and distributed edge execution.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 DQuant is modular quant infrastructure.  
 Architecture discussions, signal experiments, and AI layer contributions are welcome.
