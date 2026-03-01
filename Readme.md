@@ -1,3 +1,12 @@
+<p align="center">
+  <img src="./screenshots/logo.png" height="120"/>
+</p>
+
+<h1 align="center">Dominus Quant (DQuant)</h1>
+<p align="center">
+  Narrative-Driven AI Quant Infrastructure
+</p>
+
 # Dominus Quant (DQuant)
 
 Dominus Quant is a narrative-driven, AI-assisted crypto trading platform designed for real-time market insight and optional automated spot execution. Built as a personal project, it’s a proof-of-concept for **next-generation quant infrastructure**, combining behavioral analytics, distributed intelligence, and portfolio storytelling.
