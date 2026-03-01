@@ -23,7 +23,9 @@ This project demonstrates what’s possible when **trading intelligence, narrati
 
 </div>
 
----
+<p align="center">
+Scroll horizontally to view platform screenshots →
+</p>
 
 ---
 
