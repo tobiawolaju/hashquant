@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useDeriverseStore } from "@/lib/store";
+import { useDominusStore } from "@/lib/store";
 import { journalEntries } from "@/lib/mockData";
 
 import { AreaChart, Area, ResponsiveContainer } from "recharts";
@@ -48,7 +48,7 @@ const TradeSnapshot = ({ pnl }: { pnl: number }) => {
 };
 
 export default function TradingJournal() {
-    const { journalPage, nextPage, prevPage, setAiInsightOpen } = useDeriverseStore();
+    const { journalPage, nextPage, prevPage, setAiInsightOpen } = useDominusStore();
 
     const totalPages = Math.ceil(journalEntries.length / ITEMS_PER_PAGE);
     const start = journalPage * ITEMS_PER_PAGE;
