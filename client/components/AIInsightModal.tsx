@@ -2,11 +2,11 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import * as Dialog from "@radix-ui/react-dialog";
-import { useDeriverseStore } from "@/lib/store";
+import { useDominusStore } from "@/lib/store";
 import { useEffect } from "react";
 
 export default function AIInsightModal() {
-    const { aiInsightOpen, setAiInsightOpen } = useDeriverseStore();
+    const { aiInsightOpen, setAiInsightOpen } = useDominusStore();
 
     // Prevent scrolling when open
     useEffect(() => {
@@ -100,7 +100,7 @@ export default function AIInsightModal() {
                                         transition={{ delay: 0.8 }}
                                         className="mt-16 text-white/40 text-[10px] tracking-widest uppercase font-bold"
                                     >
-                                        Powered by Deriverse Neural Engine
+                                        Powered by Dominus Quant Insights
                                     </motion.p>
                                 </div>
                             </motion.div>

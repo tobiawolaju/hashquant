@@ -1,17 +1,17 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useDeriverseStore, type TabType } from "@/lib/store";
+import { useDominusStore, type TabType } from "@/lib/store";
 import { useState, useEffect } from "react";
 import { LightweightChart } from "./LightweightChart";
 import { useMarketData } from "../hooks/useMarketData";
 import { Timeframe } from "../services/candleAggregator";
 import { Search, ChevronDown, Clock, MousePointer2, Slash, Minus, Ruler, Magnet, Trash2, LayoutGrid, BookOpen, TrendingUp, TrendingDown, Loader2 } from "lucide-react";
 
-import { mockWalletData } from "@/lib/mockWalletData";
 import { mockOrderBookData } from "@/lib/mockOrderBook";
 import { MarketEntry } from "@/types/token";
-import { dexscreenerService } from "@/services/dexscreenerService";
+import { backendService } from "@/services/backendService";
+import { useAuthState } from "@/lib/auth";
 import { MONAD_CHAIN_ID, FALLBACK_MARKETS } from "@/lib/monadTokens";
 import dynamic from 'next/dynamic';
 
@@ -22,7 +22,7 @@ const tabs: TabType[] = ["Chart", "Orderbook", "Wallet"];
 const timeframes: Timeframe[] = ['1s', '1m', '5m', '15m'];
 
 export default function ViewPager() {
-    const { activeTab, setActiveTab, activeMarket, setActiveMarket, availableMarkets, setAvailableMarkets } = useDeriverseStore();
+    const { activeTab, setActiveTab, activeMarket, setActiveMarket, availableMarkets, setAvailableMarkets } = useDominusStore();
     const currentIndex = tabs.indexOf(activeTab);
     const [prevIndex, setPrevIndex] = useState(currentIndex);
     const [direction, setDirection] = useState(0);
@@ -40,7 +40,7 @@ export default function ViewPager() {
     useEffect(() => {
         const loadMarkets = async () => {
             try {
-                const trendingMarkets = await dexscreenerService.getTrendingPairs(MONAD_CHAIN_ID, 50);
+                const trendingMarkets = await backendService.getMarkets();
 
                 if (trendingMarkets.length > 0) {
                     setAvailableMarkets(trendingMarkets);
@@ -244,16 +244,16 @@ export default function ViewPager() {
                             >
                                 <div className="w-full max-w-sm flex flex-col items-center gap-1 mb-10">
                                     <h2 className="text-4xl font-black text-white tracking-tighter drop-shadow-[0_0_15px_rgba(168,85,247,0.4)]">
-                                        {mockWalletData.totalBalanceUsd}
+                                        Portfolio from /v1/portfolio
                                     </h2>
                                     <p className="text-xs font-mono text-neon bg-neon/10 px-3 py-1 rounded-full border border-neon/20">
-                                        {mockWalletData.address}
+                                        {walletAddress ?? "Connect Privy wallet"}
                                     </p>
                                 </div>
 
                                 <div className="w-full max-w-sm flex flex-col gap-3">
                                     <h3 className="text-sm font-bold text-white/50 uppercase tracking-widest pl-2 mb-2">Assets</h3>
-                                    {mockWalletData.tokens.map(token => (
+                                    {[].map((token: any) => (
                                         <div key={token.id} className="flex justify-between items-center bg-white/5 border border-white/10 rounded-2xl p-4 glass hover:bg-white/10 transition-colors cursor-pointer">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-full bg-neon/20 flex items-center justify-center text-neon border border-neon/30 font-black">

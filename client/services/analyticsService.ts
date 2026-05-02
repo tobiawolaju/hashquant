@@ -1,9 +1,9 @@
-import { IndexerTrade } from '../types/deriverse';
+import { IndexerTrade } from '../types/dominus';
 
 export const analyticsService = {
     /**
      * Analyzes an array of resolved trades and computes core metrics 
-     * matching the Deriverse hackathon scope.
+     * matching the Dominus hackathon scope.
      */
     computeMetrics(trades: IndexerTrade[]) {
         if (trades.length === 0) {

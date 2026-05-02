@@ -2,11 +2,11 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useEffect, useRef } from "react";
-import { useDeriverseStore } from "@/lib/store";
+import { useDominusStore } from "@/lib/store";
 import { portfolioStats } from "@/lib/mockData";
 
 export default function PortfolioAnalysisLyrics() {
-    const { setIsPortfolioActive, isPortfolioActive, metrics } = useDeriverseStore();
+    const { setIsPortfolioActive, isPortfolioActive, metrics } = useDominusStore();
 
     const lyricsData = [
         { title: "Portfolio Analysis", subtitle: "" },
@@ -28,7 +28,7 @@ export default function PortfolioAnalysisLyrics() {
         {
             title: "Total Fees Paid",
             subtitle: `$${metrics.totalFees.toLocaleString()}`,
-            detail: "Supporting the Solana Ecosystem"
+            detail: "Protocol and execution fees"
         },
         {
             title: "Long/Short Bias",
@@ -51,7 +51,7 @@ export default function PortfolioAnalysisLyrics() {
             detail: "Peak-to-Trough resilience test"
         },
         {
-            title: "All trading data is indexed directly from the Deriverse Solana program ID.",
+            title: "Trading analytics are pending backend indexer integration for Monad testnet.",
             subtitle: "",
             isDisclaimer: true
         },

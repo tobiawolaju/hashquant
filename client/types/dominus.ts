@@ -18,15 +18,15 @@ export interface IndexerTrade {
     timestamp: number;
 }
 
-// These types usually come from @deriverse/kit
-export interface DeriverseMarket {
+// These types usually come from backend indexer contract
+export interface DominusMarket {
     ticker: string;
     price: number;
     fundingRate: number;
     openInterest: number;
 }
 
-export interface DeriversePosition {
+export interface DominusPosition {
     id: string;
     market: string;
     side: "long" | "short";

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useDeriverseStore, type TabType } from "@/lib/store";
+import { useDominusStore, type TabType } from "@/lib/store";
 import { vwapData } from "@/lib/mockData";
 
 import { LineChart, BookOpen, Wallet, Play, Pause } from "lucide-react";
@@ -14,7 +14,7 @@ const tabs: { key: TabType; icon: React.ReactNode }[] = [
 ];
 
 export default function BottomFABBar() {
-    const { activeTab, setActiveTab, openExecutionModal, isPortfolioActive } = useDeriverseStore();
+    const { activeTab, setActiveTab, openExecutionModal, isPortfolioActive } = useDominusStore();
     const [isPlaying, setIsPlaying] = useState(false);
 
     if (isPortfolioActive) return null;

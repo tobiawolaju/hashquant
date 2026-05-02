@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { AppAuthProvider } from "@/lib/auth";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,7 +23,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: "Dominus Quant | Institutional Grade Terminal",
-  description: "Narrated trading analytics built on Deriverse",
+  description: "Narrated trading analytics built on Dominus Quant",
   manifest: "/manifest.json",
   icons: {
     apple: "/logo.png",
@@ -39,7 +40,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <AppAuthProvider>{children}</AppAuthProvider>
       </body>
     </html>
   );
