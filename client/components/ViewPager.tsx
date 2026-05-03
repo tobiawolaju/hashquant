@@ -13,6 +13,7 @@ import { MarketEntry } from "@/types/token";
 import { backendService } from "@/services/backendService";
 import { useAuthState } from "@/lib/auth";
 import { MONAD_CHAIN_ID, FALLBACK_MARKETS } from "@/lib/monadTokens";
+import { MONAD_TOKENS } from "@/lib/monadTokens";
 import dynamic from 'next/dynamic';
 
 
@@ -20,6 +21,26 @@ const tabs: TabType[] = ["Chart", "Orderbook", "Wallet"];
 
 
 const timeframes: Timeframe[] = ['1s', '1m', '5m', '15m'];
+const MONAD_TESTNET_RPC = 'https://testnet-rpc.monad.xyz';
+const formatUnits = (value: bigint, decimals: number) => {
+    const divisor = 10 ** Math.min(decimals, 18);
+    if (decimals <= 18) return (Number(value) / 10 ** decimals).toString();
+    return (Number(value / BigInt(10 ** (decimals - 18))) / divisor).toString();
+};
+
+type AssetRow = {
+    id: string;
+    symbol: string;
+    name: string;
+    balance: number;
+    formattedBalance: string;
+    usdValue?: number;
+    icon?: string;
+    address?: string;
+};
+type DexScreenerTokenResponse = {
+    pairs?: Array<{ priceUsd?: string }>;
+};
 
 export default function ViewPager() {
     const { activeTab, setActiveTab, activeMarket, setActiveMarket, availableMarkets, setAvailableMarkets } = useDominusStore();
@@ -30,6 +51,27 @@ export default function ViewPager() {
     const [timeframe, setTimeframe] = useState<Timeframe>('1m');
     const [activeTool, setActiveTool] = useState<string>("cursor");
     const [isMagnetActive, setIsMagnetActive] = useState(false);
+    const [assets, setAssets] = useState<AssetRow[]>([]);
+    const [assetsLoading, setAssetsLoading] = useState(false);
+
+    const rpcRequest = async (method: string, params: unknown[]) => {
+        const response = await fetch(MONAD_TESTNET_RPC, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ jsonrpc: '2.0', id: Date.now(), method, params }),
+        });
+        const payload = await response.json();
+        if (payload.error) throw new Error(payload.error.message || `RPC error: ${method}`);
+        return payload.result;
+    };
+
+    const readErc20Balance = async (tokenAddress: string, wallet: string) => {
+        const selector = '0x70a08231'; // balanceOf(address)
+        const paddedAddress = wallet.toLowerCase().replace('0x', '').padStart(64, '0');
+        const data = `${selector}${paddedAddress}`;
+        const raw = await rpcRequest('eth_call', [{ to: tokenAddress, data }, 'latest']);
+        return BigInt(raw as string);
+    };
 
     // Update direction when tab changes
     if (currentIndex !== prevIndex) {
@@ -61,6 +103,65 @@ export default function ViewPager() {
 
     // We request data for the active market's pair address
     const { candles, loading, currentPrice, setOnCandleUpdate } = useMarketData(activeMarket.pairAddress, timeframe);
+
+    useEffect(() => {
+        const loadAssets = async () => {
+            if (!walletAddress) {
+                setAssets([]);
+                return;
+            }
+            setAssetsLoading(true);
+            try {
+                const rows: AssetRow[] = [];
+                const nativeHex = await rpcRequest('eth_getBalance', [walletAddress, 'latest']);
+                const nativeBalance = Number(nativeHex ? formatUnits(BigInt(nativeHex as string), 18) : '0');
+                rows.push({
+                    id: 'native-mon',
+                    symbol: 'MON',
+                    name: 'Monad',
+                    balance: nativeBalance,
+                    formattedBalance: nativeBalance.toFixed(4),
+                });
+
+                const tokenList = Object.values(MONAD_TOKENS);
+                for (const token of tokenList) {
+                    const raw = await readErc20Balance(token.address, walletAddress);
+                    const balance = Number(formatUnits(raw, token.decimals));
+                    if (balance <= 0) continue;
+                    rows.push({
+                        id: token.address,
+                        symbol: token.symbol,
+                        name: token.name,
+                        balance,
+                        formattedBalance: balance.toFixed(4),
+                        icon: token.logoUrl,
+                        address: token.address,
+                    });
+                }
+
+                const rowsWithPrice = await Promise.all(rows.map(async (row) => {
+                    try {
+                        if (!row.address) return row;
+                        const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${encodeURIComponent(row.address)}`);
+                        const json: DexScreenerTokenResponse = await res.json();
+                        const pair = json?.pairs?.find((p) => p?.priceUsd);
+                        const price = pair?.priceUsd ? Number(pair.priceUsd) : undefined;
+                        return { ...row, usdValue: price ? row.balance * price : undefined };
+                    } catch {
+                        return row;
+                    }
+                }));
+
+                setAssets(rowsWithPrice.filter((r) => r.balance > 0));
+            } catch (error) {
+                console.error('Failed to load wallet assets:', error);
+                setAssets([]);
+            } finally {
+                setAssetsLoading(false);
+            }
+        };
+        loadAssets();
+    }, [walletAddress]);
 
 
     const variants = {
@@ -244,9 +345,7 @@ export default function ViewPager() {
                                 style={{ maskImage: 'linear-gradient(to bottom, black 90%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 90%, transparent 100%)' }}
                             >
                                 <div className="w-full max-w-sm flex flex-col items-center gap-1 mb-10">
-                                    <h2 className="text-4xl font-black text-white tracking-tighter drop-shadow-[0_0_15px_rgba(168,85,247,0.4)]">
-                                        Portfolio from /v1/portfolio
-                                    </h2>
+                                    <h2 className="text-4xl font-black text-white tracking-tighter drop-shadow-[0_0_15px_rgba(168,85,247,0.4)]">Portfolio</h2>
                                     <p className="text-xs font-mono text-neon bg-neon/10 px-3 py-1 rounded-full border border-neon/20">
                                         {walletAddress ?? "Connect Privy wallet"}
                                     </p>
@@ -254,25 +353,36 @@ export default function ViewPager() {
 
                                 <div className="w-full max-w-sm flex flex-col gap-3">
                                     <h3 className="text-sm font-bold text-white/50 uppercase tracking-widest pl-2 mb-2">Assets</h3>
-                                    {[].map((token: any) => (
-                                        <div key={token.id} className="flex justify-between items-center bg-white/5 border border-white/10 rounded-2xl p-4 glass hover:bg-white/10 transition-colors cursor-pointer">
+                                    {assetsLoading && [0, 1, 2].map((idx) => (
+                                        <div key={`skeleton-${idx}`} className="flex justify-between items-center bg-white/5 border border-white/10 rounded-2xl p-4 glass animate-pulse">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-neon/20 flex items-center justify-center text-neon border border-neon/30 font-black">
-                                                    {token.symbol[0]}
+                                                <div className="w-10 h-10 rounded-full bg-white/10" />
+                                                <div className="flex flex-col gap-2">
+                                                    <div className="h-3 w-16 bg-white/10 rounded" />
+                                                    <div className="h-2 w-24 bg-white/10 rounded" />
                                                 </div>
+                                            </div>
+                                            <div className="flex flex-col items-end gap-2">
+                                                <div className="h-3 w-16 bg-white/10 rounded" />
+                                                <div className="h-2 w-20 bg-white/10 rounded" />
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {!assetsLoading && assets.length === 0 && (
+                                        <div className="text-sm text-white/50 font-mono px-2">No assets found</div>
+                                    )}
+                                    {!assetsLoading && assets.map((token) => (
+                                        <div key={token.id} className="flex justify-between items-center bg-white/5 border border-white/10 rounded-2xl p-4 glass hover:bg-white/10 transition-colors">
+                                            <div className="flex items-center gap-3">
+                                                {token.icon ? <img src={token.icon} alt={token.symbol} className="w-10 h-10 rounded-full border border-neon/30" /> : <div className="w-10 h-10 rounded-full bg-neon/20 flex items-center justify-center text-neon border border-neon/30 font-black">{token.symbol[0]}</div>}
                                                 <div className="flex flex-col">
                                                     <span className="font-bold text-white">{token.symbol}</span>
                                                     <span className="text-xs text-white/50">{token.name}</span>
                                                 </div>
                                             </div>
                                             <div className="flex flex-col items-end">
-                                                <span className="font-bold text-white">{token.usdValue}</span>
-                                                <div className="flex gap-2">
-                                                    <span className="text-xs text-white/50">{token.balance} {token.symbol}</span>
-                                                    <span className={`text-xs ${token.isUp ? 'text-buy' : 'text-sell'}`}>
-                                                        {token.change24h}
-                                                    </span>
-                                                </div>
+                                                {typeof token.usdValue === 'number' && <span className="font-bold text-white">${token.usdValue.toFixed(2)}</span>}
+                                                <span className="text-xs text-white/50">{token.formattedBalance} {token.symbol}</span>
                                             </div>
                                         </div>
                                     ))}
