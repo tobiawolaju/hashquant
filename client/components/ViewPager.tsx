@@ -23,6 +23,7 @@ const timeframes: Timeframe[] = ['1s', '1m', '5m', '15m'];
 
 export default function ViewPager() {
     const { activeTab, setActiveTab, activeMarket, setActiveMarket, availableMarkets, setAvailableMarkets } = useDominusStore();
+    const { walletAddress } = useAuthState();
     const currentIndex = tabs.indexOf(activeTab);
     const [prevIndex, setPrevIndex] = useState(currentIndex);
     const [direction, setDirection] = useState(0);
