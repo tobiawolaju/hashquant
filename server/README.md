@@ -34,3 +34,26 @@
 
 - REST API routes are mounted from `src/api/routes`
 - Socket server is configured in `src/api/sockets`
+
+## Deploying to Render
+
+1. Push repository changes to your Git provider.
+2. In Render, create a **New Web Service** and connect the repository.
+3. Configure service settings:
+   - **Root Directory**: `server`
+   - **Runtime**: Node
+   - **Build Command**: `npm install && npm run build`
+   - **Start Command**: `npm start`
+4. Add backend environment variables in Render dashboard:
+   - `PORT` (Render can inject this automatically)
+   - `DATABASE_URL`
+   - `REDIS_URL`
+   - `PRIVY_VERIFICATION_KEY`
+   - `MONAD_RPC_URL`
+5. Deploy and verify health/API routes.
+
+### Recommended Render Settings
+
+- Use the same Node.js major version locally and on Render.
+- Enable auto-deploy from your main branch.
+- If you use private networking/databases, ensure inbound rules allow Render service access.

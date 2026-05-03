@@ -74,21 +74,21 @@ export default function AIInsightModal() {
                                         <div className="space-y-2">
                                             <p className="text-white/60 text-sm uppercase tracking-widest font-bold">Execution Timing</p>
                                             <p className="text-2xl md:text-4xl font-medium text-white italic">
-                                                "You are profitable when holding trades longer than 2 hours."
+                                                &ldquo;You are profitable when holding trades longer than 2 hours.&rdquo;
                                             </p>
                                         </div>
 
                                         <div className="space-y-2">
                                             <p className="text-white/60 text-sm uppercase tracking-widest font-bold">Psychology Trap</p>
                                             <p className="text-2xl md:text-4xl font-medium text-white italic">
-                                                "You lose 58% of trades you entered within 15 minutes of closing a previous loss."
+                                                &ldquo;You lose 58% of trades you entered within 15 minutes of closing a previous loss.&rdquo;
                                             </p>
                                         </div>
 
                                         <div className="space-y-2">
                                             <p className="text-white/60 text-sm uppercase tracking-widest font-bold">Performance Decay</p>
                                             <p className="text-2xl md:text-4xl font-medium text-white italic">
-                                                "Your win rate drops after 3 consecutive wins."
+                                                &ldquo;Your win rate drops after 3 consecutive wins.&rdquo;
                                             </p>
                                         </div>
                                     </motion.div>
