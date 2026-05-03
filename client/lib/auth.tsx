@@ -9,7 +9,7 @@ export function AppAuthProvider({children}:{children: React.ReactNode}) {
     <PrivyProvider
       appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID ?? ''}
       config={{
-        embeddedWallets: { createOnLogin: 'users-without-wallets', requireUserPasswordOnCreate: false },
+        embeddedWallets: { ethereum: { createOnLogin: 'users-without-wallets' } },
         appearance: { theme: 'dark' },
         loginMethods: ['email'],
       }}
