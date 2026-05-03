@@ -2,11 +2,14 @@ import cron from 'node-cron';
 import crypto from 'crypto';
 import { Server } from 'socket.io';
 import { StrategyAgent } from '../core/agents/StrategyAgent.js';
-import { pool } from '../infrastructure/db/client.js';
+import { isDatabaseAvailable, pool } from '../infrastructure/db/client.js';
 
 export function startStrategyJob(io: Server): void {
+  if (!pool || !isDatabaseAvailable()) return;
+
   const strategyAgent = new StrategyAgent();
   cron.schedule('*/20 * * * * *', async () => {
+    if (!pool) return;
     const { rows } = await pool.query("SELECT id,user_id,pair_address FROM strategies WHERE state='running'");
     for (const strategy of rows as Array<{ id: string; user_id: string; pair_address: string }>) {
       const signal = await strategyAgent.run(strategy.pair_address);

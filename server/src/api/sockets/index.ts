@@ -1,8 +1,9 @@
+import type { Server as HttpServer } from 'http';
 import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import { env } from '../../infrastructure/config/env.js';
 
-export function createSocket(server: Parameters<typeof Server>[0]): Server {
+export function createSocket(server: HttpServer): Server {
   const io = new Server(server, { path: '/ws', cors: { origin: '*' } });
   io.use((socket, next) => {
     try {

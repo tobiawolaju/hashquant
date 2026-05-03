@@ -9,7 +9,9 @@ const app = createApp();
 const server = http.createServer(app);
 const io = createSocket(server);
 
-await initDb();
-startStrategyJob(io);
+const databaseReady = await initDb();
+if (databaseReady) {
+  startStrategyJob(io);
+}
 
 server.listen(env.port);

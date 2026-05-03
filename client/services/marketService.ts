@@ -1,4 +1,5 @@
-import { backendService, TradeData } from './backendService';
+import { backendService } from './backendService';
+import type { TradeData } from './backendService';
 
 export { TradeData };
 

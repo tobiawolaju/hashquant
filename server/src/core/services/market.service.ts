@@ -1,4 +1,4 @@
-import { redis } from '../../infrastructure/cache/redis.js';
+import { cacheGet, cacheSet } from '../../infrastructure/cache/redis.js';
 
 const BASE = 'https://api.dexscreener.com/latest/dex';
 
@@ -16,11 +16,11 @@ async function fetchDex(path: string): Promise<{ pairs: DexPair[] }> {
 }
 
 export async function getTrendingMarkets(): Promise<DexPair[]> {
-  const cached = await redis.get('markets:trending');
+  const cached = await cacheGet('markets:trending');
   if (cached) return JSON.parse(cached) as DexPair[];
   const payload = await fetchDex('search?q=monad');
   const pairs = (payload.pairs ?? []).slice(0, 50);
-  await redis.set('markets:trending', JSON.stringify(pairs), 'EX', 30);
+  await cacheSet('markets:trending', JSON.stringify(pairs), 30);
   return pairs;
 }
 
