@@ -246,9 +246,19 @@ export default function ViewPager() {
                                     <h2 className="text-4xl font-black text-white tracking-tighter drop-shadow-[0_0_15px_rgba(168,85,247,0.4)]">
                                         {mockWalletData.totalBalanceUsd}
                                     </h2>
-                                    <p className="text-xs font-mono text-neon bg-neon/10 px-3 py-1 rounded-full border border-neon/20">
-                                        {mockWalletData.address}
-                                    </p>
+                                    <div className="flex items-center gap-2">
+                                        <p className="text-xs font-mono text-neon bg-neon/10 px-3 py-1 rounded-full border border-neon/20">
+                                            {mockWalletData.address}
+                                        </p>
+                                        <button
+                                            type="button"
+                                            aria-label="Logout wallet"
+                                            onClick={() => {}}
+                                            className="text-xs font-mono text-red-400 bg-red-500/10 px-3 py-1 rounded-full border border-red-500/20 hover:bg-red-500/20 hover:text-red-300 transition-colors"
+                                        >
+                                            Logout
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <div className="w-full max-w-sm flex flex-col gap-3">
