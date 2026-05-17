@@ -6,14 +6,13 @@ import { useState, useEffect } from "react";
 import { LightweightChart } from "./LightweightChart";
 import { useMarketData } from "../hooks/useMarketData";
 import { Timeframe } from "../services/candleAggregator";
-import { Search, ChevronDown, Clock, MousePointer2, Slash, Minus, Ruler, Magnet, Trash2, LayoutGrid, BookOpen, TrendingUp, TrendingDown, Loader2 } from "lucide-react";
+import { Search, ChevronDown, MousePointer2, Slash, Minus, Ruler, Magnet, Trash2, TrendingUp, TrendingDown, Loader2 } from "lucide-react";
 
 import { mockWalletData } from "@/lib/mockWalletData";
 import { mockOrderBookData } from "@/lib/mockOrderBook";
 import { MarketEntry } from "@/types/token";
 import { dexscreenerService } from "@/services/dexscreenerService";
-import { MONAD_CHAIN_ID, FALLBACK_MARKETS } from "@/lib/monadTokens";
-import dynamic from 'next/dynamic';
+import { MONAD_CHAIN_ID } from "@/lib/monadTokens";
 
 
 const tabs: TabType[] = ["Chart", "Orderbook", "Wallet"];
@@ -21,14 +20,33 @@ const tabs: TabType[] = ["Chart", "Orderbook", "Wallet"];
 
 const timeframes: Timeframe[] = ['1s', '1m', '5m', '15m'];
 
+type OrderPanelTab = "Open Orders" | "Positions";
+
+const orderPanelTabs: OrderPanelTab[] = ["Open Orders", "Positions"];
+
+const openOrders = [
+    { pair: "MONI/MON", side: "BUY", price: "$0.000021", size: "50,000", status: "Pending" },
+    { pair: "IGN/MON", side: "BUY", price: "$0.000230", size: "12,000", status: "Pending" },
+    { pair: "MON/USDC", side: "SELL", price: "$0.0291", size: "800", status: "Partial" },
+    { pair: "LV/MON", side: "BUY", price: "$0.000058", size: "30,000", status: "Pending" },
+];
+
+const positions = [
+    { pair: "MONI/MON", entry: "$0.000019", current: "$0.000026", pnl: "+$36.40" },
+    { pair: "IGN/MON", entry: "$0.000201", current: "$0.000249", pnl: "+$57.60" },
+    { pair: "MON/USDC", entry: "$0.02950", current: "$0.02801", pnl: "-$11.92" },
+    { pair: "LV/MON", entry: "$0.000061", current: "$0.000059", pnl: "-$6.00" },
+];
+
 export default function ViewPager() {
-    const { activeTab, setActiveTab, activeMarket, setActiveMarket, availableMarkets, setAvailableMarkets } = useDeriverseStore();
+    const { activeTab, activeMarket, setActiveMarket, availableMarkets, setAvailableMarkets } = useDeriverseStore();
     const currentIndex = tabs.indexOf(activeTab);
     const [prevIndex, setPrevIndex] = useState(currentIndex);
     const [direction, setDirection] = useState(0);
     const [timeframe, setTimeframe] = useState<Timeframe>('1m');
     const [activeTool, setActiveTool] = useState<string>("cursor");
     const [isMagnetActive, setIsMagnetActive] = useState(false);
+    const [activeOrderPanelTab, setActiveOrderPanelTab] = useState<OrderPanelTab>("Open Orders");
 
     // Update direction when tab changes
     if (currentIndex !== prevIndex) {
@@ -152,85 +170,143 @@ export default function ViewPager() {
 
 
                         {activeTab === "Orderbook" && (
-                            <div className="w-full h-full flex flex-col bg-abyss text-white/90 pt-16 px-6 select-none overflow-hidden">
-                                {/* Orderbook Header */}
-                                <div className="flex justify-between items-center pb-3 border-b border-white/5 text-[10px] font-black text-white/30 tracking-[0.2em] uppercase">
-                                    <span className="w-1/3 text-left">Price (USD)</span>
-                                    <span className="w-1/3 text-right">Size</span>
-                                    <span className="w-1/3 text-right">Total</span>
-                                </div>
+                            <div className="w-full h-full flex flex-col bg-abyss text-white/90 pt-12 px-4 sm:px-6 pb-24 select-none overflow-hidden">
+                                <div className="flex min-h-0 flex-[1.05] flex-col overflow-hidden rounded-[28px] border border-white/5 bg-white/[0.015] px-3 py-3">
+                                    {/* Orderbook Header */}
+                                    <div className="flex justify-between items-center pb-3 border-b border-white/5 text-[10px] font-black text-white/30 tracking-[0.2em] uppercase shrink-0">
+                                        <span className="w-1/3 text-left">Price (USD)</span>
+                                        <span className="w-1/3 text-right">Size</span>
+                                        <span className="w-1/3 text-right">Total</span>
+                                    </div>
 
-                                <div
-                                    className="flex-1 flex flex-col justify-end overflow-hidden py-1"
-                                    style={{ maskImage: 'linear-gradient(to bottom, transparent, black 20%)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 20%)' }}
-                                >
-                                    {mockOrderBookData.asks.slice(0, 15).reverse().map((ask, i) => {
-                                        const total = parseFloat(ask.total);
-                                        const maxTotal = parseFloat(mockOrderBookData.asks[14].total);
-                                        const depthPercent = (total / maxTotal) * 100;
+                                    <div
+                                        className="min-h-0 flex-1 flex flex-col justify-end overflow-y-auto py-1 pr-1"
+                                        style={{ maskImage: 'linear-gradient(to bottom, transparent, black 18%)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 18%)' }}
+                                    >
+                                        {mockOrderBookData.asks.slice(0, 24).reverse().map((ask, i) => {
+                                            const total = parseFloat(ask.total);
+                                            const maxTotal = parseFloat(mockOrderBookData.asks[23].total);
+                                            const depthPercent = (total / maxTotal) * 100;
 
-                                        return (
-                                            <div key={`ask-${i}`} className="group relative flex justify-between items-center h-6 text-[12px] font-mono hover:bg-white/5 transition-colors">
-                                                {/* Depth Bar */}
-                                                <div
-                                                    className="absolute right-0 top-0 bottom-0 bg-white/5 transition-all duration-500"
-                                                    style={{ width: `${depthPercent}%` }}
-                                                />
-                                                <span className="w-1/3 text-left text-white/40 font-black z-10">{ask.price}</span>
-                                                <span className="w-1/3 text-right text-white/70 z-10">{ask.size}</span>
-                                                <span className="w-1/3 text-right text-white/30 z-10">{ask.total}</span>
+                                            return (
+                                                <div key={`ask-${i}`} className="group relative flex justify-between items-center min-h-6 text-[12px] font-mono hover:bg-white/5 transition-colors">
+                                                    {/* Depth Bar */}
+                                                    <div
+                                                        className="absolute right-0 top-0 bottom-0 bg-white/5 transition-all duration-500"
+                                                        style={{ width: `${depthPercent}%` }}
+                                                    />
+                                                    <span className="w-1/3 text-left text-white/40 font-black z-10">{ask.price}</span>
+                                                    <span className="w-1/3 text-right text-white/70 z-10">{ask.size}</span>
+                                                    <span className="w-1/3 text-right text-white/30 z-10">{ask.total}</span>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+
+                                    {/* Current Price / Spread Indicator */}
+                                    <div className="sticky top-0 bottom-0 z-20 py-4 my-2 border-y border-white/5 bg-[#0a0a0a]/95 backdrop-blur-xl overflow-hidden shrink-0 shadow-[0_0_28px_rgba(124,58,237,0.12)]">
+                                        <div className="absolute inset-0 bg-neon-dim/10 animate-pulse" />
+                                        <div className="relative flex items-center justify-between px-2">
+                                            <div className="flex flex-col">
+                                                <span className="text-2xl font-black text-white tracking-tighter drop-shadow-[0_0_15px_rgba(124,58,237,0.45)]">
+                                                    {currentPrice?.toFixed(currentPrice < 1 ? 6 : 2) || activeMarket.priceUsd || "—"}
+                                                </span>
+                                                <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest -mt-1">Mid Price</span>
                                             </div>
-                                        );
-                                    })}
-                                </div>
+                                            <div className="flex flex-col items-end">
+                                                <span className={`text-xs font-mono ${activeMarket.priceChange24h >= 0 ? 'text-[#22c55e]' : 'text-[#ef4444]'}`}>
+                                                    {activeMarket.priceChange24h >= 0 ? '+' : ''}{activeMarket.priceChange24h.toFixed(2)}%
+                                                </span>
+                                                <span className="text-[10px] font-mono text-[#6b7280]">Spread: 1.00</span>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                {/* Current Price / Spread Indicator */}
-                                <div className="relative py-4 my-2 border-y border-white/5 bg-white/[0.02] overflow-hidden">
-                                    <div className="absolute inset-0 bg-neon/5 animate-pulse" />
-                                    <div className="relative flex items-center justify-between px-2">
-                                        <div className="flex flex-col">
-                                            <span className="text-2xl font-black text-white tracking-tighter drop-shadow-[0_0_15px_rgba(168,85,247,0.4)]">
-                                                {currentPrice?.toFixed(currentPrice < 1 ? 6 : 2) || activeMarket.priceUsd || "—"}
-                                            </span>
-                                            <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest -mt-1">Mid Price</span>
-                                        </div>
-                                        <div className="flex flex-col items-end">
-                                            <span className={`text-xs font-mono ${activeMarket.priceChange24h >= 0 ? 'text-neon' : 'text-sell'}`}>
-                                                {activeMarket.priceChange24h >= 0 ? '+' : ''}{activeMarket.priceChange24h.toFixed(2)}%
-                                            </span>
-                                            <span className="text-[10px] font-mono text-white/20">Spread: 1.00</span>
-                                        </div>
+                                    <div
+                                        className="min-h-0 flex-1 flex flex-col justify-start overflow-y-auto py-1 pr-1"
+                                        style={{ maskImage: 'linear-gradient(to top, transparent, black 18%)', WebkitMaskImage: 'linear-gradient(to top, transparent, black 18%)' }}
+                                    >
+                                        {mockOrderBookData.bids.slice(0, 24).map((bid, i) => {
+                                            const total = parseFloat(bid.total);
+                                            const maxTotal = parseFloat(mockOrderBookData.bids[23].total);
+                                            const depthPercent = (total / maxTotal) * 100;
+
+                                            return (
+                                                <div key={`bid-${i}`} className="group relative flex justify-between items-center min-h-6 text-[12px] font-mono hover:bg-white/5 transition-colors">
+                                                    {/* Depth Bar */}
+                                                    <div
+                                                        className="absolute right-0 top-0 bottom-0 bg-neon-dim/15 transition-all duration-500"
+                                                        style={{ width: `${depthPercent}%` }}
+                                                    />
+                                                    <span className="w-1/3 text-left text-neon-dim font-black z-10">{bid.price}</span>
+                                                    <span className="w-1/3 text-right text-white/70 z-10">{bid.size}</span>
+                                                    <span className="w-1/3 text-right text-white/30 z-10">{bid.total}</span>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 </div>
 
-                                <div
-                                    className="flex-1 flex flex-col justify-start overflow-hidden py-1"
-                                    style={{ maskImage: 'linear-gradient(to top, transparent, black 20%)', WebkitMaskImage: 'linear-gradient(to top, transparent, black 20%)' }}
-                                >
-                                    {mockOrderBookData.bids.slice(0, 15).map((bid, i) => {
-                                        const total = parseFloat(bid.total);
-                                        const maxTotal = parseFloat(mockOrderBookData.bids[14].total);
-                                        const depthPercent = (total / maxTotal) * 100;
+                                <div className="mt-3 flex min-h-0 flex-[0.95] flex-col overflow-hidden rounded-[28px] border border-white/5 bg-white/[0.02] p-3 shadow-[0_18px_45px_rgba(0,0,0,0.28)]">
+                                    <div className="grid w-full grid-cols-2 gap-2 rounded-full bg-white/[0.03] p-1 border border-white/5 shrink-0">
+                                        {orderPanelTabs.map((tab) => (
+                                            <button
+                                                key={tab}
+                                                type="button"
+                                                onClick={() => setActiveOrderPanelTab(tab)}
+                                                className={`rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-[0.16em] transition-all ${activeOrderPanelTab === tab
+                                                    ? 'bg-[#7C3AED] text-white shadow-[0_0_24px_rgba(124,58,237,0.35)]'
+                                                    : 'bg-transparent text-[#6b7280] hover:text-white'
+                                                    }`}
+                                            >
+                                                {tab}
+                                            </button>
+                                        ))}
+                                    </div>
 
-                                        return (
-                                            <div key={`bid-${i}`} className="group relative flex justify-between items-center h-6 text-[12px] font-mono hover:bg-white/5 transition-colors">
-                                                {/* Depth Bar */}
-                                                <div
-                                                    className="absolute right-0 top-0 bottom-0 bg-neon/10 transition-all duration-500"
-                                                    style={{ width: `${depthPercent}%` }}
-                                                />
-                                                <span className="w-1/3 text-left text-neon font-black z-10">{bid.price}</span>
-                                                <span className="w-1/3 text-right text-white/70 z-10">{bid.size}</span>
-                                                <span className="w-1/3 text-right text-white/30 z-10">{bid.total}</span>
+                                    <div className="mt-3 min-h-0 flex-1 overflow-y-auto pr-1">
+                                        {activeOrderPanelTab === "Open Orders" ? (
+                                            <div className="min-w-full">
+                                                <div className="grid grid-cols-[1.25fr_0.75fr_1fr_0.85fr_0.9fr] gap-2 pb-2 text-[9px] font-black uppercase tracking-[0.18em] text-[#6b7280]">
+                                                    <span>Pair</span>
+                                                    <span>Side</span>
+                                                    <span className="text-right">Price</span>
+                                                    <span className="text-right">Size</span>
+                                                    <span className="text-right">Status</span>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    {openOrders.map((order) => (
+                                                        <div key={`${order.pair}-${order.price}-${order.size}`} className="grid grid-cols-[1.25fr_0.75fr_1fr_0.85fr_0.9fr] gap-2 rounded-2xl border border-white/5 bg-white/[0.03] px-3 py-3 text-[11px] font-mono text-white/80">
+                                                            <span className="font-black text-white">{order.pair}</span>
+                                                            <span className={`font-black ${order.side === 'BUY' ? 'text-[#7C3AED]' : 'text-[#6b7280]'}`}>{order.side}</span>
+                                                            <span className="text-right text-white/70">{order.price}</span>
+                                                            <span className="text-right text-white/70">{order.size}</span>
+                                                            <span className="text-right text-[#6b7280]">{order.status}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </div>
-                                        );
-                                    })}
-                                </div>
-
-                                {/* Legend or Volume summary */}
-                                <div className="mt-auto py-4 border-t border-white/5 flex justify-between text-[10px] font-black text-white/20 tracking-tighter uppercase">
-                                    <span>Liquidity: {activeMarket.liquidity > 0 ? `$${(activeMarket.liquidity / 1e6).toFixed(2)}M` : '—'}</span>
-                                    <span>24h Vol: {activeMarket.volume24h > 0 ? `$${(activeMarket.volume24h / 1e6).toFixed(2)}M` : '—'}</span>
+                                        ) : (
+                                            <div className="min-w-full">
+                                                <div className="grid grid-cols-[1.15fr_1fr_1fr_0.85fr] gap-2 pb-2 text-[9px] font-black uppercase tracking-[0.18em] text-[#6b7280]">
+                                                    <span>Pair</span>
+                                                    <span className="text-right">Entry</span>
+                                                    <span className="text-right">Current</span>
+                                                    <span className="text-right">PnL</span>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    {positions.map((position) => (
+                                                        <div key={`${position.pair}-${position.entry}`} className="grid grid-cols-[1.15fr_1fr_1fr_0.85fr] gap-2 rounded-2xl border border-white/5 bg-white/[0.03] px-3 py-3 text-[11px] font-mono text-white/80">
+                                                            <span className="font-black text-white">{position.pair}</span>
+                                                            <span className="text-right text-white/70">{position.entry}</span>
+                                                            <span className="text-right text-white/70">{position.current}</span>
+                                                            <span className={`text-right font-black ${position.pnl.startsWith('+') ? 'text-[#22c55e]' : 'text-[#ef4444]'}`}>{position.pnl}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         )}
